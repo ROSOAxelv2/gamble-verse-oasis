@@ -1,95 +1,86 @@
 
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../../contexts/AuthContext";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import React from "react";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { User, LogOut, Settings, ChevronDown } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { Crown } from "lucide-react";
 
 export const Header = () => {
   const { user, logout } = useAuth();
-  const navigate = useNavigate();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  const handleLogout = async () => {
-    await logout();
-    navigate("/");
-  };
+  const location = useLocation();
 
   return (
-    <header className="sticky top-0 z-10 border-b bg-card/80 backdrop-blur-md">
-      <div className="container flex h-16 items-center justify-between">
-        <div className="flex items-center">
-          <Link to="/dashboard" className="flex items-center space-x-2">
-            <span className="text-xl font-bold">
-              <span className="text-casino-gold">Lovable</span> Casino
-            </span>
-          </Link>
-          
-          {user && (
-            <nav className="hidden md:ml-8 md:flex md:items-center md:space-x-4">
-              <Link to="/dashboard" className="text-sm font-medium transition-colors hover:text-primary">
-                Dashboard
-              </Link>
-              <Link to="/games" className="text-sm font-medium transition-colors hover:text-primary">
+    <header className="bg-background border-b sticky top-0 z-50">
+      <div className="container mx-auto px-4 py-3 flex justify-between items-center">
+        <Link to="/" className="text-2xl font-bold text-primary">
+          Lovable Casino
+        </Link>
+
+        {user ? (
+          <div className="flex items-center gap-4">
+            <div className="hidden md:flex items-center gap-4">
+              <Link
+                to="/games"
+                className={`text-sm font-medium transition-colors hover:text-primary ${
+                  location.pathname === "/games" ? "text-primary" : "text-muted-foreground"
+                }`}
+              >
                 Games
               </Link>
-              <Link to="/transactions" className="text-sm font-medium transition-colors hover:text-primary">
+              <Link
+                to="/transactions"
+                className={`text-sm font-medium transition-colors hover:text-primary ${
+                  location.pathname === "/transactions" ? "text-primary" : "text-muted-foreground"
+                }`}
+              >
                 Transactions
               </Link>
+              <Link
+                to="/profile"
+                className={`text-sm font-medium transition-colors hover:text-primary ${
+                  location.pathname === "/profile" ? "text-primary" : "text-muted-foreground"
+                }`}
+              >
+                Profile
+              </Link>
+              <Link
+                to="/vip"
+                className={`text-sm font-medium transition-colors hover:text-primary flex items-center gap-1 ${
+                  location.pathname === "/vip" ? "text-primary" : "text-muted-foreground"
+                }`}
+              >
+                <Crown size={16} />
+                VIP
+              </Link>
               {user.isAdmin && (
-                <Link to="/admin" className="text-sm font-medium transition-colors hover:text-primary">
+                <Link
+                  to="/admin"
+                  className={`text-sm font-medium transition-colors hover:text-primary ${
+                    location.pathname === "/admin" ? "text-primary" : "text-muted-foreground"
+                  }`}
+                >
                   Admin
                 </Link>
               )}
-            </nav>
-          )}
-        </div>
-
-        {user ? (
-          <div className="flex items-center space-x-4">
-            <div className="hidden md:block text-sm font-medium">
-              <span className="mr-1">Balance:</span>
-              <span className="text-casino-gold">{user.balance.toLocaleString()} Credits</span>
             </div>
-            
-            <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-              <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  className="flex items-center space-x-2"
-                >
-                  <User size={16} />
-                  <span className="hidden md:inline">{user.username}</span>
-                  <ChevronDown size={14} />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem className="md:hidden">
-                  <span>Balance: {user.balance.toLocaleString()} Credits</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate("/profile")}>
-                  <User className="mr-2" size={14} />
-                  <span>Profile</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate("/settings")}>
-                  <Settings className="mr-2" size={14} />
-                  <span>Settings</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleLogout}>
-                  <LogOut className="mr-2" size={14} />
-                  <span>Logout</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+
+            <div className="flex items-center gap-2">
+              <div className="text-sm font-medium">
+                {user.username} - {user.balance.toLocaleString()} credits
+              </div>
+              <Button variant="outline" size="sm" onClick={logout}>
+                Logout
+              </Button>
+            </div>
           </div>
         ) : (
-          <Button onClick={() => navigate("/")}>Login</Button>
+          <div className="flex items-center gap-2">
+            <Link to="/">
+              <Button variant="outline" size="sm">
+                Login
+              </Button>
+            </Link>
+          </div>
         )}
       </div>
     </header>

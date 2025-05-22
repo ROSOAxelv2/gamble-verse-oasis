@@ -1,4 +1,5 @@
-import { User, Transaction, GameType, TransactionType, DiceGameResult, GameConfig, PlinkoGameResult, SlotGameResult, AdminAnalytics } from '../types';
+import { User, Transaction, GameType, TransactionType, DiceGameResult, GameConfig, PlinkoGameResult, SlotGameResult, AdminAnalytics, VipLevel } from '../types';
+import { vipService } from './vip';
 
 // Mock user data
 let currentUser: User | null = null;
@@ -10,6 +11,13 @@ const registeredUsers: User[] = [
     balance: 1000,
     isAdmin: false,
     createdAt: new Date().toISOString(),
+    vipStats: {
+      level: VipLevel.BRONZE,
+      lifetimeWagered: 5000,
+      currentPoints: 50,
+      nextLevelAt: 10000,
+      badges: []
+    }
   },
   {
     id: '2',
@@ -18,6 +26,13 @@ const registeredUsers: User[] = [
     balance: 5000,
     isAdmin: true,
     createdAt: new Date().toISOString(),
+    vipStats: {
+      level: VipLevel.GOLD,
+      lifetimeWagered: 60000,
+      currentPoints: 600,
+      nextLevelAt: 200000,
+      badges: []
+    }
   },
 ];
 
@@ -140,7 +155,22 @@ export const userService = {
           reject(new Error('Not authenticated'));
           return;
         }
-        resolve(currentUser);
+        
+        // Ensure VIP stats are current
+        if (!currentUser.vipStats) {
+          vipService.getUserVipStats()
+            .then(vipStats => {
+              if (vipStats) {
+                currentUser!.vipStats = vipStats;
+              }
+              resolve(currentUser!);
+            })
+            .catch(() => {
+              resolve(currentUser!);
+            });
+        } else {
+          resolve(currentUser);
+        }
       }, 300);
     });
   },
@@ -161,6 +191,29 @@ export const userService = {
             return;
           }
           currentUser.balance -= amount;
+          
+          // Update VIP stats when placing a bet
+          if (currentUser.vipStats) {
+            currentUser.vipStats.lifetimeWagered += amount;
+            currentUser.vipStats.currentPoints += Math.floor(amount / 100);
+            
+            // Recalculate VIP level based on wagered amount
+            currentUser.vipStats.level = vipService.calculateVipLevel(currentUser.vipStats.lifetimeWagered);
+            
+            // Get next level threshold
+            const nextLevel = vipService.getNextLevel(currentUser.vipStats.level);
+            if (nextLevel) {
+              vipService.getVipConfig().then(config => {
+                if (currentUser && currentUser.vipStats) {
+                  currentUser.vipStats.nextLevelAt = config.levelThresholds[nextLevel];
+                }
+              });
+            } else {
+              if (currentUser.vipStats) {
+                currentUser.vipStats.nextLevelAt = Infinity;
+              }
+            }
+          }
         } else if (type === TransactionType.WIN) {
           currentUser.balance += amount;
         } else if (type === TransactionType.DEPOSIT) {
@@ -171,6 +224,8 @@ export const userService = {
             return;
           }
           currentUser.balance -= amount;
+        } else if (type === TransactionType.REWARD) {
+          currentUser.balance += amount;
         }
 
         // Record transaction

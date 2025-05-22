@@ -13,6 +13,7 @@ import GamesPage from "./pages/GamesPage";
 import TransactionsPage from "./pages/TransactionsPage";
 import ProfilePage from "./pages/ProfilePage";
 import AdminPage from "./pages/AdminPage";
+import VipPage from "./pages/VipPage";
 
 // Components
 import { Dashboard } from "./components/dashboard/Dashboard";
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="/games" element={<GamesPage />} />
             <Route path="/transactions" element={<TransactionsPage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/vip" element={<VipPage />} />
             <Route path="/admin" element={<AdminPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Layout } from "../components/layout/Layout";
 import { adminService } from "../services/api";
@@ -25,6 +24,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { VipConfigTab } from "../components/admin/VipConfigTab";
 
 const AdminPage = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -104,9 +104,10 @@ const AdminPage = () => {
         <h1 className="text-3xl font-bold mb-6">Admin Panel</h1>
         
         <Tabs defaultValue="users" className="space-y-6">
-          <TabsList className="grid w-full max-w-md grid-cols-3">
+          <TabsList className="grid w-full max-w-md grid-cols-4">
             <TabsTrigger value="users">Users</TabsTrigger>
             <TabsTrigger value="games">Game Config</TabsTrigger>
+            <TabsTrigger value="vip">VIP Program</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
           </TabsList>
           
@@ -266,6 +267,11 @@ const AdminPage = () => {
                 )}
               </CardContent>
             </Card>
+          </TabsContent>
+          
+          {/* VIP Program Tab */}
+          <TabsContent value="vip" className="space-y-6">
+            <VipConfigTab />
           </TabsContent>
           
           {/* Analytics Tab */}

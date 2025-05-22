@@ -6,6 +6,44 @@ export interface User {
   balance: number;
   isAdmin: boolean;
   createdAt: string;
+  vipStats?: VipStats;
+}
+
+export interface VipStats {
+  level: VipLevel;
+  lifetimeWagered: number;
+  currentPoints: number;
+  nextLevelAt: number;
+  badges: UserBadge[];
+}
+
+export enum VipLevel {
+  BRONZE = 'bronze',
+  SILVER = 'silver',
+  GOLD = 'gold',
+  PLATINUM = 'platinum',
+  DIAMOND = 'diamond',
+}
+
+export interface UserBadge {
+  id: string;
+  name: string;
+  description: string;
+  imageUrl: string;
+  earnedAt: string;
+}
+
+export interface VipProgramConfig {
+  id: string;
+  levelThresholds: Record<VipLevel, number>;
+  levelBenefits: Record<VipLevel, VipBenefits>;
+  enabled: boolean;
+}
+
+export interface VipBenefits {
+  dailyFreeSpin: number;
+  cashbackPercent: number;
+  badges: string[];
 }
 
 export interface GameConfig {
@@ -38,6 +76,7 @@ export enum TransactionType {
   WITHDRAWAL = 'withdrawal',
   BET = 'bet',
   WIN = 'win',
+  REWARD = 'reward',
 }
 
 export interface DiceGameResult {
