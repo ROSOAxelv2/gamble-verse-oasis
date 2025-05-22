@@ -47,3 +47,48 @@ export interface DiceGameResult {
   winAmount: number;
   isWin: boolean;
 }
+
+export interface PlinkoGameResult {
+  betAmount: number;
+  winAmount: number;
+  path: number[];
+  finalBucket: number;
+  isWin: boolean;
+}
+
+export interface SlotGameResult {
+  betAmount: number;
+  winAmount: number;
+  reels: string[][];
+  paylines: number[];
+  isWin: boolean;
+}
+
+export interface PlinkoConfig extends GameConfig {
+  rows: number;
+  buckets: PlinkoPayoutBucket[];
+}
+
+export interface PlinkoPayoutBucket {
+  position: number;
+  multiplier: number;
+}
+
+export interface SlotsConfig extends GameConfig {
+  reels: number;
+  symbols: string[];
+  paylines: SlotsPayline[];
+}
+
+export interface SlotsPayline {
+  id: number;
+  combination: string[];
+  multiplier: number;
+}
+
+export interface AdminAnalytics {
+  totalWagers: number;
+  houseEdge: number;
+  activePlayers: number;
+  gamePopularity: Record<GameType, number>;
+}

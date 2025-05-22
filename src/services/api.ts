@@ -1,5 +1,4 @@
-
-import { User, Transaction, GameType, TransactionType, DiceGameResult, GameConfig } from '../types';
+import { User, Transaction, GameType, TransactionType, DiceGameResult, GameConfig, PlinkoGameResult, SlotGameResult, AdminAnalytics } from '../types';
 
 // Mock user data
 let currentUser: User | null = null;
@@ -220,10 +219,6 @@ export const gameService = {
           reject(new Error(`No configuration found for ${gameType}`));
           return;
         }
-        if (!config.enabled) {
-          reject(new Error(`${gameType} is currently disabled`));
-          return;
-        }
         resolve(config);
       }, 300);
     });
@@ -284,6 +279,195 @@ export const gameService = {
       }, 800); // Slightly longer delay to simulate the game
     });
   },
+  
+  playPlinkoGame: async (betAmount: number): Promise<PlinkoGameResult> => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if (!currentUser) {
+          reject(new Error('Not authenticated'));
+          return;
+        }
+
+        // Get plinko game config
+        const config = gameConfigurations.find(c => c.gameType === GameType.PLINKO);
+        if (!config || !config.enabled) {
+          reject(new Error('Plinko game is not available'));
+          return;
+        }
+
+        // Validate bet amount
+        if (betAmount < config.minBet || betAmount > config.maxBet) {
+          reject(new Error(`Bet amount must be between ${config.minBet} and ${config.maxBet}`));
+          return;
+        }
+
+        // Check sufficient balance
+        if (currentUser.balance < betAmount) {
+          reject(new Error('Insufficient balance'));
+          return;
+        }
+
+        // Generate path through the plinko board
+        // For simplicity, we'll use 8 rows
+        const rows = 8;
+        const path: number[] = [];
+        
+        for (let i = 0; i < rows; i++) {
+          // 0 = left, 1 = right
+          path.push(Math.round(Math.random()));
+        }
+        
+        // Calculate which bucket the ball ends up in (0-8)
+        // Count number of 'right' moves to determine bucket
+        const rightMoves = path.filter(dir => dir === 1).length;
+        const finalBucket = rightMoves;
+        
+        // Determine win amount based on bucket
+        // Middle buckets pay less, edge buckets pay more
+        const multipliers = [10, 5, 3, 2, 0, 2, 3, 5, 10];
+        const bucketMultiplier = multipliers[finalBucket];
+        const isWin = bucketMultiplier > 0;
+        const winAmount = isWin ? betAmount * bucketMultiplier : 0;
+        
+        // Process bet
+        userService.updateBalance(betAmount, TransactionType.BET, GameType.PLINKO)
+          .then(() => {
+            if (isWin) {
+              return userService.updateBalance(winAmount, TransactionType.WIN, GameType.PLINKO);
+            }
+            return Promise.resolve(currentUser!);
+          })
+          .then(() => {
+            const result: PlinkoGameResult = {
+              betAmount,
+              winAmount,
+              path,
+              finalBucket,
+              isWin,
+            };
+            resolve(result);
+          })
+          .catch(error => reject(error));
+      }, 800);
+    });
+  },
+  
+  playSlotsGame: async (betAmount: number): Promise<SlotGameResult> => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if (!currentUser) {
+          reject(new Error('Not authenticated'));
+          return;
+        }
+
+        // Get slots game config
+        const config = gameConfigurations.find(c => c.gameType === GameType.SLOTS);
+        if (!config || !config.enabled) {
+          reject(new Error('Slots game is not available'));
+          return;
+        }
+
+        // Validate bet amount
+        if (betAmount < config.minBet || betAmount > config.maxBet) {
+          reject(new Error(`Bet amount must be between ${config.minBet} and ${config.maxBet}`));
+          return;
+        }
+
+        // Check sufficient balance
+        if (currentUser.balance < betAmount) {
+          reject(new Error('Insufficient balance'));
+          return;
+        }
+        
+        // Define symbols and their probabilities
+        const symbols = ["🍒", "🍋", "🍊", "🍇", "🔔", "7️⃣", "💰"];
+        const weights = [30, 30, 20, 10, 5, 3, 2];
+        
+        // Generate random reels
+        const reels: string[][] = [[], [], []];
+        
+        for (let i = 0; i < 3; i++) {
+          for (let j = 0; j < 3; j++) {
+            // Weighted random selection
+            let random = Math.random() * weights.reduce((a, b) => a + b, 0);
+            let selectedIndex = 0;
+            
+            for (let k = 0; k < weights.length; k++) {
+              random -= weights[k];
+              if (random <= 0) {
+                selectedIndex = k;
+                break;
+              }
+            }
+            
+            reels[i][j] = symbols[selectedIndex];
+          }
+        }
+        
+        // Check for winning paylines
+        const paylines: number[] = [];
+        let totalWin = 0;
+        
+        // Define payline patterns
+        const paylinePatterns = [
+          { id: 1, positions: [[0, 0], [0, 1], [0, 2]], multiplier: 2 }, // Top row
+          { id: 2, positions: [[1, 0], [1, 1], [1, 2]], multiplier: 1 }, // Middle row
+          { id: 3, positions: [[2, 0], [2, 1], [2, 2]], multiplier: 2 }, // Bottom row
+          { id: 4, positions: [[0, 0], [1, 1], [2, 2]], multiplier: 3 }, // Diagonal top-left to bottom-right
+          { id: 5, positions: [[0, 2], [1, 1], [2, 0]], multiplier: 3 }, // Diagonal top-right to bottom-left
+        ];
+        
+        // Check each payline
+        paylinePatterns.forEach(payline => {
+          const symbols = payline.positions.map(pos => reels[pos[0]][pos[1]]);
+          const isWin = symbols.every(s => s === symbols[0]);
+          
+          if (isWin) {
+            paylines.push(payline.id);
+            
+            // Calculate win amount based on symbol and multiplier
+            let symbolMultiplier = 0;
+            const symbol = symbols[0];
+            
+            switch (symbol) {
+              case "🍒": symbolMultiplier = 1; break;
+              case "🍋": symbolMultiplier = 2; break;
+              case "🍊": symbolMultiplier = 3; break;
+              case "🍇": symbolMultiplier = 4; break;
+              case "🔔": symbolMultiplier = 5; break;
+              case "7️⃣": symbolMultiplier = 10; break;
+              case "💰": symbolMultiplier = 20; break;
+            }
+            
+            totalWin += betAmount * symbolMultiplier * payline.multiplier;
+          }
+        });
+        
+        const isWin = paylines.length > 0;
+        const winAmount = isWin ? totalWin : 0;
+        
+        // Process bet
+        userService.updateBalance(betAmount, TransactionType.BET, GameType.SLOTS)
+          .then(() => {
+            if (isWin) {
+              return userService.updateBalance(winAmount, TransactionType.WIN, GameType.SLOTS);
+            }
+            return Promise.resolve(currentUser!);
+          })
+          .then(() => {
+            const result: SlotGameResult = {
+              betAmount,
+              winAmount,
+              reels,
+              paylines,
+              isWin,
+            };
+            resolve(result);
+          })
+          .catch(error => reject(error));
+      }, 800);
+    });
+  }
 };
 
 // Admin services
@@ -334,4 +518,74 @@ export const adminService = {
       }, 500);
     });
   },
+  
+  getAnalytics: async (): Promise<AdminAnalytics> => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if (!currentUser?.isAdmin) {
+          reject(new Error('Unauthorized'));
+          return;
+        }
+        
+        // Calculate analytics from transaction data
+        const totalWagers = transactions
+          .filter(t => t.type === TransactionType.BET)
+          .reduce((sum, t) => sum + t.amount, 0);
+          
+        const totalWins = transactions
+          .filter(t => t.type === TransactionType.WIN)
+          .reduce((sum, t) => sum + t.amount, 0);
+          
+        const houseEdge = totalWagers > 0 
+          ? parseFloat(((totalWagers - totalWins) / totalWagers * 100).toFixed(1))
+          : 0;
+          
+        // Game popularity (count of bets per game)
+        const betsByGame = transactions
+          .filter(t => t.type === TransactionType.BET && t.gameType)
+          .reduce((counts, t) => {
+            const gameType = t.gameType as GameType;
+            counts[gameType] = (counts[gameType] || 0) + 1;
+            return counts;
+          }, {} as Record<GameType, number>);
+          
+        // Fill in missing games with zero counts
+        Object.values(GameType).forEach(gameType => {
+          if (!betsByGame[gameType]) {
+            betsByGame[gameType] = 0;
+          }
+        });
+        
+        const analytics: AdminAnalytics = {
+          totalWagers,
+          houseEdge,
+          activePlayers: registeredUsers.length,
+          gamePopularity: betsByGame
+        };
+        
+        resolve(analytics);
+      }, 500);
+    });
+  },
+  
+  updateUserStatus: async (userId: string, action: 'freeze' | 'unfreeze'): Promise<User> => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if (!currentUser?.isAdmin) {
+          reject(new Error('Unauthorized'));
+          return;
+        }
+        
+        const userIndex = registeredUsers.findIndex(u => u.id === userId);
+        if (userIndex === -1) {
+          reject(new Error('User not found'));
+          return;
+        }
+        
+        // In a real app, we'd update a 'status' field in the user object
+        // For this mock, we'll just return the user without changes
+        resolve(registeredUsers[userIndex]);
+      }, 500);
+    });
+  }
 };
