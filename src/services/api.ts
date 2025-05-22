@@ -1,4 +1,4 @@
-import { User, Transaction, GameType, TransactionType, DiceGameResult, GameConfig, PlinkoGameResult, SlotGameResult, AdminAnalytics, VipLevel } from '../types';
+import { User, Transaction, GameType, TransactionType, DiceGameResult, GameConfig, PlinkoGameResult, SlotGameResult, AdminAnalytics, VipLevel, CrashGameResult, CrashConfig } from '../types';
 import { vipService } from './vip';
 
 // Mock user data
@@ -61,6 +61,14 @@ const gameConfigurations: GameConfig[] = [
     maxBet: 1500,
     payoutMultiplier: 8,
     enabled: false,
+  },
+  {
+    id: '4',
+    gameType: GameType.CRASH,
+    minBet: 50,
+    maxBet: 5000,
+    payoutMultiplier: 10,
+    enabled: true,
   },
 ];
 
@@ -543,6 +551,75 @@ export const gameService = {
             .catch(error => reject(error));
         }, 1500); // Longer delay for slots animation
       }, 800);
+    });
+  },
+  
+  playCrashGame: async (betAmount: number): Promise<{ crashPoint: number }> => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if (!currentUser) {
+          reject(new Error('Not authenticated'));
+          return;
+        }
+
+        // Get crash game config
+        const config = gameConfigurations.find(c => c.gameType === GameType.CRASH) as CrashConfig;
+        if (!config || !config.enabled) {
+          reject(new Error('Crash game is not available'));
+          return;
+        }
+
+        // Validate bet amount
+        if (betAmount < config.minBet || betAmount > config.maxBet) {
+          reject(new Error(`Bet amount must be between ${config.minBet} and ${config.maxBet}`));
+          return;
+        }
+
+        // Check sufficient balance
+        if (currentUser.balance < betAmount) {
+          reject(new Error('Insufficient balance'));
+          return;
+        }
+        
+        // Calculate a random crash point
+        // In a real game, this would be determined by the server using provably fair algorithms
+        // For now, we'll use a simple random distribution
+        const crashPoint = Math.max(1.01, (0.99 / (1 - Math.random()))).toFixed(2);
+        
+        resolve({ crashPoint: parseFloat(crashPoint) });
+      }, 300);
+    });
+  },
+  
+  crashCashout: async (betAmount: number, multiplier: number): Promise<CrashGameResult> => {
+    return new Promise((resolve, reject) => {
+      setTimeout(async () => {
+        if (!currentUser) {
+          reject(new Error('Not authenticated'));
+          return;
+        }
+        
+        try {
+          // Calculate win amount
+          const winAmount = betAmount * multiplier;
+          
+          // Process win
+          await userService.updateBalance(winAmount, TransactionType.WIN, GameType.CRASH);
+          
+          // Return result
+          const result: CrashGameResult = {
+            betAmount,
+            winAmount,
+            cashoutMultiplier: multiplier,
+            crashPoint: multiplier, // In a real implementation, this would be the actual crash point
+            isWin: true
+          };
+          
+          resolve(result);
+        } catch (error) {
+          reject(error);
+        }
+      }, 300);
     });
   }
 };

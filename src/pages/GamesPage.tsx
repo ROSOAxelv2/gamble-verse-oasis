@@ -4,6 +4,7 @@ import { Layout } from "../components/layout/Layout";
 import { DiceGame } from "../components/games/DiceGame";
 import { PlinkoGame } from "../components/games/PlinkoGame";
 import { SlotMachine } from "../components/games/SlotMachine";
+import { CrashGame } from "../components/games/CrashGame";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const GamesPage = () => {
@@ -15,10 +16,11 @@ const GamesPage = () => {
         <h1 className="text-3xl font-bold mb-6">Games</h1>
         
         <Tabs defaultValue="dice" value={activeGame} onValueChange={setActiveGame} className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-6">
+          <TabsList className="grid w-full grid-cols-4 mb-6">
             <TabsTrigger value="dice">Dice</TabsTrigger>
             <TabsTrigger value="plinko">Plinko</TabsTrigger>
             <TabsTrigger value="slots">Slots</TabsTrigger>
+            <TabsTrigger value="crash">Crash</TabsTrigger>
           </TabsList>
           
           <TabsContent value="dice" className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -166,6 +168,57 @@ const GamesPage = () => {
                   <li>• Maximum bet: 1,500 credits</li>
                   <li>• Multiple paylines available</li>
                   <li>• Payouts vary by symbol combinations</li>
+                </ul>
+              </div>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="crash" className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+              <CrashGame />
+            </div>
+            
+            <div className="p-4 bg-muted rounded-lg">
+              <h2 className="text-xl font-bold mb-4">How to Play Crash</h2>
+              
+              <div className="space-y-4">
+                <div>
+                  <h3 className="font-medium">1. Place Your Bet</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Enter the amount of credits you want to wager.
+                  </p>
+                </div>
+                
+                <div>
+                  <h3 className="font-medium">2. Watch the Multiplier</h3>
+                  <p className="text-sm text-muted-foreground">
+                    When the game starts, watch as the multiplier increases.
+                  </p>
+                </div>
+                
+                <div>
+                  <h3 className="font-medium">3. Cash Out in Time</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Click the "Cash Out" button before the game crashes to secure your winnings.
+                  </p>
+                </div>
+                
+                <div>
+                  <h3 className="font-medium">4. Set Auto-Cashout</h3>
+                  <p className="text-sm text-muted-foreground">
+                    For safer play, set an auto-cashout point to automatically collect your winnings.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="mt-8 p-4 bg-card rounded-lg border border-border">
+                <h3 className="font-medium mb-2">Game Rules:</h3>
+                <ul className="text-sm space-y-2 text-muted-foreground">
+                  <li>• Minimum bet: 50 credits</li>
+                  <li>• Maximum bet: 5,000 credits</li>
+                  <li>• Crash point is random (1x to 10x)</li>
+                  <li>• Higher multiplier = higher risk</li>
+                  <li>• Auto-cashout feature available</li>
                 </ul>
               </div>
             </div>

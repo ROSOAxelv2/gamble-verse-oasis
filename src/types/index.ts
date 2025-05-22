@@ -59,6 +59,7 @@ export enum GameType {
   DICE = 'dice',
   PLINKO = 'plinko',
   SLOTS = 'slots',
+  CRASH = 'crash',
 }
 
 export interface Transaction {
@@ -103,6 +104,14 @@ export interface SlotGameResult {
   isWin: boolean;
 }
 
+export interface CrashGameResult {
+  betAmount: number;
+  winAmount: number;
+  cashoutMultiplier: number;
+  crashPoint: number;
+  isWin: boolean;
+}
+
 export interface PlinkoConfig extends GameConfig {
   rows: number;
   buckets: PlinkoPayoutBucket[];
@@ -123,6 +132,12 @@ export interface SlotsPayline {
   id: number;
   combination: string[];
   multiplier: number;
+}
+
+export interface CrashConfig extends GameConfig {
+  houseEdge: number;
+  minCrashPoint: number;
+  maxPotentialMultiplier: number;
 }
 
 export interface AdminAnalytics {
