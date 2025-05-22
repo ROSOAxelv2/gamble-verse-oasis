@@ -280,7 +280,7 @@ export const gameService = {
     });
   },
   
-  playPlinkoGame: async (betAmount: number): Promise<PlinkoGameResult> => {
+  playPlinkoGame: async (betAmount: number, difficulty: string = "Easy"): Promise<PlinkoGameResult> => {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         if (!currentUser) {
@@ -307,9 +307,29 @@ export const gameService = {
           return;
         }
 
+        // Set rows based on difficulty
+        let rows = 8;
+        let multipliers: number[] = [];
+        
+        switch (difficulty) {
+          case "Easy":
+            rows = 8;
+            multipliers = [2, 1.5, 1.2, 1, 0, 1, 1.2, 1.5, 2];
+            break;
+          case "Medium":
+            rows = 10;
+            multipliers = [3, 2, 1.5, 1.2, 0.8, 0.5, 0.8, 1.2, 1.5, 2, 3];
+            break;
+          case "Hard":
+            rows = 12;
+            multipliers = [5, 3, 2, 1.5, 1, 0.5, 0, 0.5, 1, 1.5, 2, 3, 5];
+            break;
+          default:
+            rows = 8;
+            multipliers = [2, 1.5, 1.2, 1, 0, 1, 1.2, 1.5, 2];
+        }
+        
         // Generate path through the plinko board
-        // For simplicity, we'll use 8 rows
-        const rows = 8;
         const path: number[] = [];
         
         for (let i = 0; i < rows; i++) {
@@ -317,37 +337,37 @@ export const gameService = {
           path.push(Math.round(Math.random()));
         }
         
-        // Calculate which bucket the ball ends up in (0-8)
+        // Calculate which bucket the ball ends up in
         // Count number of 'right' moves to determine bucket
         const rightMoves = path.filter(dir => dir === 1).length;
         const finalBucket = rightMoves;
         
         // Determine win amount based on bucket
-        // Middle buckets pay less, edge buckets pay more
-        const multipliers = [10, 5, 3, 2, 0, 2, 3, 5, 10];
-        const bucketMultiplier = multipliers[finalBucket];
+        const bucketMultiplier = multipliers[finalBucket] || 0;
         const isWin = bucketMultiplier > 0;
         const winAmount = isWin ? betAmount * bucketMultiplier : 0;
         
-        // Process bet
-        userService.updateBalance(betAmount, TransactionType.BET, GameType.PLINKO)
-          .then(() => {
-            if (isWin) {
-              return userService.updateBalance(winAmount, TransactionType.WIN, GameType.PLINKO);
-            }
-            return Promise.resolve(currentUser!);
-          })
-          .then(() => {
-            const result: PlinkoGameResult = {
-              betAmount,
-              winAmount,
-              path,
-              finalBucket,
-              isWin,
-            };
-            resolve(result);
-          })
-          .catch(error => reject(error));
+        // Process bet with slow animation (simulate longer gameplay)
+        setTimeout(() => {
+          userService.updateBalance(betAmount, TransactionType.BET, GameType.PLINKO)
+            .then(() => {
+              if (isWin) {
+                return userService.updateBalance(winAmount, TransactionType.WIN, GameType.PLINKO);
+              }
+              return Promise.resolve(currentUser!);
+            })
+            .then(() => {
+              const result: PlinkoGameResult = {
+                betAmount,
+                winAmount,
+                path,
+                finalBucket,
+                isWin,
+              };
+              resolve(result);
+            })
+            .catch(error => reject(error));
+        }, 1000);
       }, 800);
     });
   },
@@ -410,11 +430,11 @@ export const gameService = {
         
         // Define payline patterns
         const paylinePatterns = [
-          { id: 1, positions: [[0, 0], [0, 1], [0, 2]], multiplier: 2 }, // Top row
-          { id: 2, positions: [[1, 0], [1, 1], [1, 2]], multiplier: 1 }, // Middle row
-          { id: 3, positions: [[2, 0], [2, 1], [2, 2]], multiplier: 2 }, // Bottom row
-          { id: 4, positions: [[0, 0], [1, 1], [2, 2]], multiplier: 3 }, // Diagonal top-left to bottom-right
-          { id: 5, positions: [[0, 2], [1, 1], [2, 0]], multiplier: 3 }, // Diagonal top-right to bottom-left
+          { id: 1, positions: [[0, 0], [0, 1], [0, 2]], multiplier: 2 },
+          { id: 2, positions: [[1, 0], [1, 1], [1, 2]], multiplier: 1 },
+          { id: 3, positions: [[2, 0], [2, 1], [2, 2]], multiplier: 2 },
+          { id: 4, positions: [[0, 0], [1, 1], [2, 2]], multiplier: 3 },
+          { id: 5, positions: [[0, 2], [1, 1], [2, 0]], multiplier: 3 },
         ];
         
         // Check each payline
@@ -446,25 +466,27 @@ export const gameService = {
         const isWin = paylines.length > 0;
         const winAmount = isWin ? totalWin : 0;
         
-        // Process bet
-        userService.updateBalance(betAmount, TransactionType.BET, GameType.SLOTS)
-          .then(() => {
-            if (isWin) {
-              return userService.updateBalance(winAmount, TransactionType.WIN, GameType.SLOTS);
-            }
-            return Promise.resolve(currentUser!);
-          })
-          .then(() => {
-            const result: SlotGameResult = {
-              betAmount,
-              winAmount,
-              reels,
-              paylines,
-              isWin,
-            };
-            resolve(result);
-          })
-          .catch(error => reject(error));
+        // Process bet - add a delay to slow down the animation
+        setTimeout(() => {
+          userService.updateBalance(betAmount, TransactionType.BET, GameType.SLOTS)
+            .then(() => {
+              if (isWin) {
+                return userService.updateBalance(winAmount, TransactionType.WIN, GameType.SLOTS);
+              }
+              return Promise.resolve(currentUser!);
+            })
+            .then(() => {
+              const result: SlotGameResult = {
+                betAmount,
+                winAmount,
+                reels,
+                paylines,
+                isWin,
+              };
+              resolve(result);
+            })
+            .catch(error => reject(error));
+        }, 1500); // Longer delay for slots animation
       }, 800);
     });
   }

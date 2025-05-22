@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Slider } from "@/components/ui/slider";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 // Define constants at the top level for use throughout the component
 const COLORS = {
@@ -25,17 +26,36 @@ const COLORS = {
 // Define pegRadius as a constant to be used throughout the component
 const PEG_RADIUS = 5;
 
+// Animation speed control - higher number means slower animation
+const ANIMATION_SPEED = 150; 
+
+// Define difficulty presets
+const DIFFICULTY_PRESETS = [
+  { label: "Easy", rows: 8, multipliers: [2, 1.5, 1.2, 1, 0, 1, 1.2, 1.5, 2] },
+  { label: "Medium", rows: 10, multipliers: [3, 2, 1.5, 1.2, 0.8, 0.5, 0.8, 1.2, 1.5, 2, 3] },
+  { label: "Hard", rows: 12, multipliers: [5, 3, 2, 1.5, 1, 0.5, 0, 0.5, 1, 1.5, 2, 3, 5] },
+];
+
 export const PlinkoGame = () => {
   const { user } = useAuth();
   const [betAmount, setBetAmount] = useState<number>(50);
   const [loading, setLoading] = useState<boolean>(false);
   const [gameResult, setGameResult] = useState<PlinkoGameResult | null>(null);
-  const [config, setConfig] = useState<{ minBet: number; maxBet: number; rows: number; enabled: boolean }>({
+  const [difficulty, setDifficulty] = useState<string>("Easy");
+  const [config, setConfig] = useState<{ 
+    minBet: number; 
+    maxBet: number; 
+    rows: number; 
+    enabled: boolean;
+    multipliers: number[];
+  }>({
     minBet: 50,
     maxBet: 2000,
     rows: 8,
-    enabled: false
+    enabled: false,
+    multipliers: DIFFICULTY_PRESETS[0].multipliers
   });
+  
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number | null>(null);
   
@@ -43,11 +63,16 @@ export const PlinkoGame = () => {
     const fetchGameConfig = async () => {
       try {
         const plinkoConfig = await gameService.getGameConfig(GameType.PLINKO);
+        
+        // Use the default difficulty preset (Easy)
+        const defaultPreset = DIFFICULTY_PRESETS[0];
+        
         setConfig({
           minBet: plinkoConfig.minBet,
           maxBet: plinkoConfig.maxBet,
-          rows: 8, // Default rows
-          enabled: plinkoConfig.enabled
+          rows: defaultPreset.rows,
+          enabled: plinkoConfig.enabled,
+          multipliers: defaultPreset.multipliers
         });
       } catch (error) {
         console.error(error);
@@ -79,6 +104,18 @@ export const PlinkoGame = () => {
     setBetAmount(value[0]);
   };
   
+  const handleDifficultyChange = (value: string) => {
+    const selectedPreset = DIFFICULTY_PRESETS.find(preset => preset.label === value);
+    if (selectedPreset) {
+      setDifficulty(value);
+      setConfig(prevConfig => ({
+        ...prevConfig,
+        rows: selectedPreset.rows,
+        multipliers: selectedPreset.multipliers
+      }));
+    }
+  };
+  
   const drawBoard = () => {
     if (!canvasRef.current) return;
     
@@ -107,7 +144,7 @@ export const PlinkoGame = () => {
       }
     }
     
-    // Draw buckets
+    // Draw buckets with multipliers
     const bucketWidth = pegSpacing;
     const bucketCount = rows + 1;
     const bucketY = (rows + 1) * pegSpacing + PEG_RADIUS * 2;
@@ -115,14 +152,17 @@ export const PlinkoGame = () => {
     for (let i = 0; i < bucketCount; i++) {
       const x = (i * bucketWidth) + (width - bucketCount * bucketWidth) / 2;
       
-      // Determine bucket color based on position
+      // Get multiplier for this bucket
+      const multiplier = config.multipliers[i] || 0;
+      
+      // Determine bucket color based on multiplier value
       let bucketColor;
-      if (i < bucketCount / 3) {
-        bucketColor = COLORS.bucket.low;
-      } else if (i > bucketCount * 2 / 3) {
+      if (multiplier >= 2) {
         bucketColor = COLORS.bucket.high;
-      } else {
+      } else if (multiplier > 0) {
         bucketColor = COLORS.bucket.medium;
+      } else {
+        bucketColor = COLORS.bucket.low;
       }
       
       // Draw bucket
@@ -130,6 +170,12 @@ export const PlinkoGame = () => {
       ctx.rect(x, bucketY, bucketWidth, PEG_RADIUS * 4);
       ctx.fillStyle = bucketColor;
       ctx.fill();
+      
+      // Draw multiplier text
+      ctx.font = "12px Arial";
+      ctx.fillStyle = "white";
+      ctx.textAlign = "center";
+      ctx.fillText(`${multiplier}x`, x + bucketWidth/2, bucketY + PEG_RADIUS * 2.5);
     }
   };
   
@@ -146,10 +192,17 @@ export const PlinkoGame = () => {
     const ballRadius = 6;
     
     let currentStep = 0;
-    const startX = width / 2;
-    const startY = 0;
+    let lastTimestamp = 0;
     
-    const animate = () => {
+    const animate = (timestamp: number) => {
+      // Slow down the animation using timestamp
+      if (!lastTimestamp) lastTimestamp = timestamp;
+      if (timestamp - lastTimestamp < ANIMATION_SPEED) {
+        animationRef.current = requestAnimationFrame(animate);
+        return;
+      }
+      lastTimestamp = timestamp;
+      
       // Clear ball trail
       drawBoard();
       
@@ -201,6 +254,14 @@ export const PlinkoGame = () => {
         ctx.arc(bucketX, bucketY, ballRadius, 0, 2 * Math.PI);
         ctx.fillStyle = COLORS.ball;
         ctx.fill();
+        
+        // Display win amount above the ball if won
+        if (gameResult?.isWin) {
+          ctx.font = "bold 14px Arial";
+          ctx.fillStyle = "white";
+          ctx.textAlign = "center";
+          ctx.fillText(`${gameResult.winAmount}`, bucketX, bucketY - 15);
+        }
       }
     };
     
@@ -224,7 +285,8 @@ export const PlinkoGame = () => {
     
     try {
       setLoading(true);
-      const result = await gameService.playPlinkoGame(betAmount);
+      // Pass the current difficulty level to the backend
+      const result = await gameService.playPlinkoGame(betAmount, difficulty);
       setGameResult(result);
       
       // Update user balance
@@ -275,6 +337,25 @@ export const PlinkoGame = () => {
         
         <div className="space-y-3">
           <div className="space-y-1">
+            <Label>Difficulty</Label>
+            <Select value={difficulty} onValueChange={handleDifficultyChange}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select difficulty" />
+              </SelectTrigger>
+              <SelectContent>
+                {DIFFICULTY_PRESETS.map(preset => (
+                  <SelectItem key={preset.label} value={preset.label}>
+                    {preset.label} ({preset.rows} rows)
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <div className="text-xs text-muted-foreground mt-1">
+              Higher difficulty = more pegs and higher potential payouts
+            </div>
+          </div>
+          
+          <div className="space-y-1">
             <div className="flex justify-between">
               <Label>Bet Amount: {betAmount}</Label>
               <span className="text-sm text-muted-foreground">
@@ -315,4 +396,3 @@ export const PlinkoGame = () => {
     </Card>
   );
 };
-
