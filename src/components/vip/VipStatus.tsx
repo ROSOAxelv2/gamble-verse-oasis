@@ -13,12 +13,18 @@ export const VipStatus = () => {
   const [vipStats, setVipStats] = useState<VipStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [claimingReward, setClaimingReward] = useState(false);
+  const [progressPercent, setProgressPercent] = useState(0);
   
   useEffect(() => {
     const fetchVipStats = async () => {
       try {
         const stats = await vipService.getUserVipStats();
         setVipStats(stats);
+        
+        // Calculate progress here where we can properly await the promise
+        if (stats) {
+          calculateAndSetProgress(stats);
+        }
       } catch (error) {
         console.error("Failed to fetch VIP stats:", error);
         toast.error("Could not load VIP information");
@@ -29,6 +35,31 @@ export const VipStatus = () => {
     
     fetchVipStats();
   }, []);
+  
+  const calculateAndSetProgress = async (stats: VipStats) => {
+    const { level, lifetimeWagered, nextLevelAt } = stats;
+    
+    // If at max level, show 100%
+    if (nextLevelAt === Infinity) {
+      setProgressPercent(100);
+      return;
+    }
+    
+    try {
+      const config = await vipService.getVipConfig();
+      const currentLevelThreshold = config.levelThresholds[level];
+      
+      // Calculate percentage progress to next level
+      const currentProgress = lifetimeWagered - currentLevelThreshold;
+      const totalNeeded = nextLevelAt - currentLevelThreshold;
+      
+      const percent = Math.min(Math.floor((currentProgress / totalNeeded) * 100), 100);
+      setProgressPercent(percent);
+    } catch (error) {
+      console.error("Failed to calculate progress:", error);
+      setProgressPercent(0);
+    }
+  };
   
   const handleClaimDailyReward = async () => {
     if (!vipStats) return;
@@ -70,21 +101,6 @@ export const VipStatus = () => {
       case VipLevel.PLATINUM: return "bg-blue-400";
       case VipLevel.DIAMOND: return "bg-blue-300";
     }
-  };
-  
-  const calculateProgress = () => {
-    if (!vipStats) return 0;
-    
-    const { level, lifetimeWagered, nextLevelAt } = vipStats;
-    const currentLevelThreshold = vipService.getVipConfig().then(config => config.levelThresholds[level]);
-    
-    // If at max level, show 100%
-    if (nextLevelAt === Infinity) return 100;
-    
-    // Calculate percentage progress to next level
-    const currentProgress = lifetimeWagered - vipService.getVipConfig().then(config => config.levelThresholds[level]);
-    const totalNeeded = nextLevelAt - vipService.getVipConfig().then(config => config.levelThresholds[level]);
-    return Math.min(Math.floor((currentProgress / totalNeeded) * 100), 100);
   };
   
   if (isLoading) {
@@ -148,9 +164,9 @@ export const VipStatus = () => {
         <div className="mb-6">
           <div className="flex justify-between text-sm mb-1">
             <span>Progress to next level</span>
-            <span>{nextLevel ? `${calculateProgress()}%` : '100%'}</span>
+            <span>{nextLevel ? `${progressPercent}%` : '100%'}</span>
           </div>
-          <Progress value={calculateProgress()} className="h-2" />
+          <Progress value={progressPercent} className="h-2" />
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
