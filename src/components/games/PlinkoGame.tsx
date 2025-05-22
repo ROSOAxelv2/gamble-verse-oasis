@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Slider } from "@/components/ui/slider";
 
+// Define constants at the top level for use throughout the component
 const COLORS = {
   peg: "#9b87f5",
   path: "#e5deff",
@@ -20,6 +21,9 @@ const COLORS = {
     low: "#d946ef"
   }
 };
+
+// Define pegRadius as a constant to be used throughout the component
+const PEG_RADIUS = 5;
 
 export const PlinkoGame = () => {
   const { user } = useAuth();
@@ -85,7 +89,6 @@ export const PlinkoGame = () => {
     const rows = config.rows;
     const width = canvas.width;
     const height = canvas.height;
-    const pegRadius = 5;
     const pegSpacing = width / (rows + 2);
     
     // Clear canvas
@@ -98,7 +101,7 @@ export const PlinkoGame = () => {
         const y = (row + 1) * pegSpacing;
         
         ctx.beginPath();
-        ctx.arc(x, y, pegRadius, 0, 2 * Math.PI);
+        ctx.arc(x, y, PEG_RADIUS, 0, 2 * Math.PI);
         ctx.fillStyle = COLORS.peg;
         ctx.fill();
       }
@@ -107,7 +110,7 @@ export const PlinkoGame = () => {
     // Draw buckets
     const bucketWidth = pegSpacing;
     const bucketCount = rows + 1;
-    const bucketY = (rows + 1) * pegSpacing + pegRadius * 2;
+    const bucketY = (rows + 1) * pegSpacing + PEG_RADIUS * 2;
     
     for (let i = 0; i < bucketCount; i++) {
       const x = (i * bucketWidth) + (width - bucketCount * bucketWidth) / 2;
@@ -124,7 +127,7 @@ export const PlinkoGame = () => {
       
       // Draw bucket
       ctx.beginPath();
-      ctx.rect(x, bucketY, bucketWidth, pegRadius * 4);
+      ctx.rect(x, bucketY, bucketWidth, PEG_RADIUS * 4);
       ctx.fillStyle = bucketColor;
       ctx.fill();
     }
@@ -189,7 +192,7 @@ export const PlinkoGame = () => {
       if (currentStep === path.length) {
         const bucketWidth = pegSpacing;
         const bucketCount = rows + 1;
-        const bucketY = (rows + 1) * pegSpacing + pegRadius * 4;
+        const bucketY = (rows + 1) * pegSpacing + PEG_RADIUS * 4;
         const finalBucket = gameResult?.finalBucket || 0;
         const bucketX = ((finalBucket) * bucketWidth) + (width - bucketCount * bucketWidth) / 2 + bucketWidth / 2;
         
@@ -312,3 +315,4 @@ export const PlinkoGame = () => {
     </Card>
   );
 };
+
