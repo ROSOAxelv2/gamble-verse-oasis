@@ -5,7 +5,7 @@ import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { gameService, userService } from "@/services/api";
-import { CrashGameResult, GameType } from "@/types";
+import { CrashGameResult, GameType, TransactionType } from "@/types";
 import { toast } from "sonner";
 import { TrendingUp, DollarSign } from "lucide-react";
 
@@ -107,7 +107,7 @@ export const CrashGame = () => {
       animationFrameRef.current = requestAnimationFrame(updateMultiplier);
       
       // Update balance (place bet)
-      const user = await userService.updateBalance(betAmount, 'bet', GameType.CRASH);
+      const user = await userService.updateBalance(betAmount, TransactionType.BET, GameType.CRASH);
       setBalance(user.balance);
       
     } catch (error) {
@@ -133,7 +133,7 @@ export const CrashGame = () => {
       const winAmount = betAmount * currentMultiplier;
       
       // Update user balance
-      const user = await userService.updateBalance(winAmount, 'win', GameType.CRASH);
+      const user = await userService.updateBalance(winAmount, TransactionType.WIN, GameType.CRASH);
       setBalance(user.balance);
       
       // Update game result
