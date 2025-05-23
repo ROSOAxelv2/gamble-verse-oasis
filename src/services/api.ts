@@ -435,7 +435,7 @@ export const gameService = {
     });
   },
   
-  playSlotsGame: async (betAmount: number): Promise<SlotGameResult> => {
+  playSlotsGame: async (betAmount: number, gameTheme?: string): Promise<SlotGameResult> => {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         if (!currentUser) {
@@ -462,9 +462,19 @@ export const gameService = {
           return;
         }
         
-        // Define symbols and their probabilities
-        const symbols = ["🍒", "🍋", "🍊", "🍇", "🔔", "7️⃣", "💰"];
-        const weights = [30, 30, 20, 10, 5, 3, 2];
+        // Define symbols and their probabilities based on game theme
+        let symbols: string[];
+        let weights: number[];
+        
+        if (gameTheme === 'treasure-of-aztec') {
+          // Treasure of Aztec symbols with adjusted weights for high volatility
+          symbols = ["🔹", "🔸", "🟡", "🟢", "🐆", "🦅", "🐍", "🌋", "⭐", "🌞", "🏆"];
+          weights = [30, 30, 25, 20, 10, 10, 8, 5, 3, 2, 1];
+        } else {
+          // Classic symbols
+          symbols = ["🍒", "🍋", "🍊", "🍇", "🔔", "7️⃣", "💰"];
+          weights = [30, 30, 20, 10, 5, 3, 2];
+        }
         
         // Generate random reels
         const reels: string[][] = [[], [], []];
@@ -502,24 +512,42 @@ export const gameService = {
         
         // Check each payline
         paylinePatterns.forEach(payline => {
-          const symbols = payline.positions.map(pos => reels[pos[0]][pos[1]]);
-          const isWin = symbols.every(s => s === symbols[0]);
+          const symbolsOnLine = payline.positions.map(pos => reels[pos[0]][pos[1]]);
+          const isWin = symbolsOnLine.every(s => s === symbolsOnLine[0]);
           
           if (isWin) {
             paylines.push(payline.id);
             
             // Calculate win amount based on symbol and multiplier
             let symbolMultiplier = 0;
-            const symbol = symbols[0];
+            const symbol = symbolsOnLine[0];
             
-            switch (symbol) {
-              case "🍒": symbolMultiplier = 1; break;
-              case "🍋": symbolMultiplier = 2; break;
-              case "🍊": symbolMultiplier = 3; break;
-              case "🍇": symbolMultiplier = 4; break;
-              case "🔔": symbolMultiplier = 5; break;
-              case "7️⃣": symbolMultiplier = 10; break;
-              case "💰": symbolMultiplier = 20; break;
+            if (gameTheme === 'treasure-of-aztec') {
+              // Aztec symbols have different payouts
+              switch (symbol) {
+                case "🔹": symbolMultiplier = 1; break;
+                case "🔸": symbolMultiplier = 1.5; break;
+                case "🟡": symbolMultiplier = 2; break;
+                case "🟢": symbolMultiplier = 2.5; break;
+                case "🐆": symbolMultiplier = 5; break;
+                case "🦅": symbolMultiplier = 8; break;
+                case "🐍": symbolMultiplier = 10; break;
+                case "🌋": symbolMultiplier = 15; break;
+                case "⭐": symbolMultiplier = 20; break; // Wild
+                case "🌞": symbolMultiplier = 2; break;  // Scatter
+                case "🏆": symbolMultiplier = 50; break; // Bonus
+              }
+            } else {
+              // Classic symbol payouts
+              switch (symbol) {
+                case "🍒": symbolMultiplier = 1; break;
+                case "🍋": symbolMultiplier = 2; break;
+                case "🍊": symbolMultiplier = 3; break;
+                case "🍇": symbolMultiplier = 4; break;
+                case "🔔": symbolMultiplier = 5; break;
+                case "7️⃣": symbolMultiplier = 10; break;
+                case "💰": symbolMultiplier = 20; break;
+              }
             }
             
             totalWin += betAmount * symbolMultiplier * payline.multiplier;

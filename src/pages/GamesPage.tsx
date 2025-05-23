@@ -4,11 +4,13 @@ import { Layout } from "../components/layout/Layout";
 import { DiceGame } from "../components/games/DiceGame";
 import { PlinkoGame } from "../components/games/PlinkoGame";
 import { SlotMachine } from "../components/games/SlotMachine";
+import { SlotGameTheme } from "../types/slots";
 import { CrashGame } from "../components/games/CrashGame";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const GamesPage = () => {
   const [activeGame, setActiveGame] = useState("dice");
+  const [activeSlotTheme, setActiveSlotTheme] = useState<SlotGameTheme>(SlotGameTheme.CLASSIC);
 
   return (
     <Layout requireAuth>
@@ -125,51 +127,95 @@ const GamesPage = () => {
           
           <TabsContent value="slots" className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
-              <SlotMachine />
+              <SlotMachine gameTheme={activeSlotTheme} />
             </div>
             
             <div className="p-4 bg-muted rounded-lg">
               <h2 className="text-xl font-bold mb-4">How to Play Slots</h2>
               
-              <div className="space-y-4">
-                <div>
-                  <h3 className="font-medium">1. Place Your Bet</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Select your bet amount using the slider.
-                  </p>
+              {activeSlotTheme === SlotGameTheme.TREASURE_OF_AZTEC ? (
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="font-medium">1. Place Your Bet</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Select your bet amount using the slider.
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <h3 className="font-medium">2. Spin the Reels</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Click the "Spin" button to start the reels.
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <h3 className="font-medium">3. Wild Collections</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Collect wild symbols to fill the meter and trigger free spins!
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <h3 className="font-medium">4. Free Spins & Multipliers</h3>
+                    <p className="text-sm text-muted-foreground">
+                      During free spins, win multipliers increase with each wild collected.
+                    </p>
+                  </div>
+                  
+                  <div className="mt-8 p-4 bg-card rounded-lg border border-border">
+                    <h3 className="font-medium mb-2">Game Rules:</h3>
+                    <ul className="text-sm space-y-2 text-muted-foreground">
+                      <li>• Minimum bet: 25 credits</li>
+                      <li>• Maximum bet: 1,500 credits</li>
+                      <li>• RTP: 96.52%</li>
+                      <li>• Volatility: High</li>
+                      <li>• Trigger free spins with 3+ scatters or by filling the Wild meter</li>
+                      <li>• Multipliers can increase up to 5x during free spins</li>
+                    </ul>
+                  </div>
                 </div>
-                
-                <div>
-                  <h3 className="font-medium">2. Spin the Reels</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Click the "Spin" button to start the reels.
-                  </p>
+              ) : (
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="font-medium">1. Place Your Bet</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Select your bet amount using the slider.
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <h3 className="font-medium">2. Spin the Reels</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Click the "Spin" button to start the reels.
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <h3 className="font-medium">3. Match Symbols</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Match symbols across paylines to win big!
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <h3 className="font-medium">4. Special Combinations</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Look for special symbol combinations for the biggest payouts!
+                    </p>
+                  </div>
+                  
+                  <div className="mt-8 p-4 bg-card rounded-lg border border-border">
+                    <h3 className="font-medium mb-2">Game Rules:</h3>
+                    <ul className="text-sm space-y-2 text-muted-foreground">
+                      <li>• Minimum bet: 25 credits</li>
+                      <li>• Maximum bet: 1,500 credits</li>
+                      <li>• Multiple paylines available</li>
+                      <li>• Payouts vary by symbol combinations</li>
+                    </ul>
+                  </div>
                 </div>
-                
-                <div>
-                  <h3 className="font-medium">3. Match Symbols</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Match symbols across paylines to win big!
-                  </p>
-                </div>
-                
-                <div>
-                  <h3 className="font-medium">4. Special Combinations</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Look for special symbol combinations for the biggest payouts!
-                  </p>
-                </div>
-              </div>
-              
-              <div className="mt-8 p-4 bg-card rounded-lg border border-border">
-                <h3 className="font-medium mb-2">Game Rules:</h3>
-                <ul className="text-sm space-y-2 text-muted-foreground">
-                  <li>• Minimum bet: 25 credits</li>
-                  <li>• Maximum bet: 1,500 credits</li>
-                  <li>• Multiple paylines available</li>
-                  <li>• Payouts vary by symbol combinations</li>
-                </ul>
-              </div>
+              )}
             </div>
           </TabsContent>
           
