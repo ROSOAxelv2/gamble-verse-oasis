@@ -4,7 +4,8 @@ import { GameType } from ".";
 export enum SlotGameTheme {
   CLASSIC = "classic",
   TREASURE_OF_AZTEC = "treasure-of-aztec",
-  WILD_BOUNTY_SHOWDOWN = "wild-bounty-showdown"
+  WILD_BOUNTY_SHOWDOWN = "wild-bounty-showdown",
+  PRAGMATIC_AZTEC = "pragmatic-aztec"
 }
 
 export interface SlotGameConfig {
@@ -58,4 +59,55 @@ export interface SlotGameState {
 
 export interface SlotMachineProps {
   gameTheme?: SlotGameTheme;
+}
+
+// Pragmatic Aztec specific types
+export interface PragmaticAztecConfig {
+  gridSize: {
+    reels: number;
+    rows: number;
+  };
+  adjacencyRequirement: number;
+  symbols: PragmaticSymbol[];
+  wildMeterThreshold: number;
+  wildMeterMultipliers: number[];
+  scatterFreeSpin: Record<number, number>;
+  cascadesEnabled: boolean;
+  giantSymbolsEnabled: boolean;
+  giantSymbolSize: {
+    width: number;
+    height: number;
+  };
+  reelStrips: string[][];
+}
+
+export interface PragmaticSymbol {
+  id: string;
+  name: string;
+  symbol: string;
+  type: "blank" | "low" | "premium" | "wild" | "scatter";
+  payouts: {
+    [adjacent: number]: number;
+  };
+  weight: number;
+  canBeGiant: boolean;
+}
+
+export interface PragmaticGameState extends SlotGameState {
+  grid: string[][];
+  wildMeter: number;
+  currentMultiplier: number;
+  freeSpinsRemaining: number;
+  giantSymbols: GiantSymbolPosition[];
+  cascadeCount: number;
+  isFreeSpin: boolean;
+}
+
+export interface GiantSymbolPosition {
+  symbol: string;
+  startRow: number;
+  startCol: number;
+  width: number;
+  height: number;
+  isSticky: boolean;
 }

@@ -3,6 +3,7 @@ import { Layout } from "../components/layout/Layout";
 import { DiceGame } from "../components/games/DiceGame";
 import { PlinkoGame } from "../components/games/PlinkoGame";
 import { SlotMachine } from "../components/games/SlotMachine";
+import { PragmaticSlotMachine } from "../components/games/PragmaticSlotMachine";
 import { SlotGameTheme } from "../types/slots";
 import { CrashGame } from "../components/games/CrashGame";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -10,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 const GamesPage = () => {
   const [activeGame, setActiveGame] = useState("dice");
   const [activeSlotTheme, setActiveSlotTheme] = useState<SlotGameTheme>(SlotGameTheme.CLASSIC);
+  const [activeSlotType, setActiveSlotType] = useState<"regular" | "pragmatic">("regular");
 
   return (
     <Layout requireAuth>
@@ -126,13 +128,88 @@ const GamesPage = () => {
           
           <TabsContent value="slots" className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
-              <SlotMachine gameTheme={activeSlotTheme} />
+              {activeSlotType === "regular" ? (
+                <SlotMachine gameTheme={activeSlotTheme} />
+              ) : (
+                <PragmaticSlotMachine />
+              )}
+              
+              <div className="mt-4 flex justify-center">
+                <Tabs 
+                  defaultValue="regular" 
+                  value={activeSlotType} 
+                  onValueChange={(v) => setActiveSlotType(v as "regular" | "pragmatic")}
+                >
+                  <TabsList>
+                    <TabsTrigger value="regular">Regular Slots</TabsTrigger>
+                    <TabsTrigger value="pragmatic">Pragmatic Aztec</TabsTrigger>
+                  </TabsList>
+                </Tabs>
+              </div>
+              
+              {activeSlotType === "regular" && (
+                <div className="mt-2 flex justify-center">
+                  <Tabs 
+                    defaultValue={activeSlotTheme} 
+                    value={activeSlotTheme} 
+                    onValueChange={(v) => setActiveSlotTheme(v as SlotGameTheme)}
+                  >
+                    <TabsList>
+                      <TabsTrigger value={SlotGameTheme.CLASSIC}>Classic</TabsTrigger>
+                      <TabsTrigger value={SlotGameTheme.TREASURE_OF_AZTEC}>Aztec</TabsTrigger>
+                    </TabsList>
+                  </Tabs>
+                </div>
+              )}
             </div>
             
             <div className="p-4 bg-muted rounded-lg">
               <h2 className="text-xl font-bold mb-4">How to Play Slots</h2>
               
-              {activeSlotTheme === SlotGameTheme.TREASURE_OF_AZTEC ? (
+              {activeSlotType === "pragmatic" ? (
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="font-medium">1. Place Your Bet</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Select your bet amount using the slider.
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <h3 className="font-medium">2. Spin the Reels</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Click the "Spin" button to start the game.
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <h3 className="font-medium">3. Adjacency Wins</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Win by landing 4+ adjacent matching symbols in a row, starting from the left.
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <h3 className="font-medium">4. Special Features</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Collect wild symbols to fill the meter for multipliers. Land 4+ scatters to trigger free spins with giant symbols!
+                    </p>
+                  </div>
+                  
+                  <div className="mt-8 p-4 bg-card rounded-lg border border-border">
+                    <h3 className="font-medium mb-2">Game Rules:</h3>
+                    <ul className="text-sm space-y-2 text-muted-foreground">
+                      <li>• Minimum bet: 50 credits</li>
+                      <li>• Maximum bet: 2,500 credits</li>
+                      <li>• RTP: 96.71%</li>
+                      <li>• Volatility: High</li>
+                      <li>• 6×5 grid with adjacency wins</li>
+                      <li>• Wild meter fills at 5 wilds</li>
+                      <li>• Free spins with giant symbols</li>
+                    </ul>
+                  </div>
+                </div>
+              ) : activeSlotTheme === SlotGameTheme.TREASURE_OF_AZTEC ? (
                 <div className="space-y-4">
                   <div>
                     <h3 className="font-medium">1. Place Your Bet</h3>

@@ -11,7 +11,7 @@ interface BetControlsProps {
   onBetChange: (value: number[]) => void;
   minBet: number;
   maxBet: number;
-  gameTheme: SlotGameTheme;
+  gameTheme: SlotGameTheme | string;
   gameResult: SlotGameResult | null;
   onSpin: () => void;
   isSpinning: boolean;
@@ -33,14 +33,17 @@ export const BetControls: React.FC<BetControlsProps> = ({
   isBonus,
   freeSpins,
 }) => {
+  // Determine styling based on game theme
+  const isAztecTheme = gameTheme === SlotGameTheme.TREASURE_OF_AZTEC || gameTheme === "pragmatic-aztec";
+  
   return (
     <div className="space-y-3">
       <div className="space-y-1">
         <div className="flex justify-between">
-          <Label className={gameTheme === SlotGameTheme.TREASURE_OF_AZTEC ? "text-amber-200" : ""}>
+          <Label className={isAztecTheme ? "text-amber-200" : ""}>
             Bet Amount: {betAmount}
           </Label>
-          <span className={`text-sm ${gameTheme === SlotGameTheme.TREASURE_OF_AZTEC ? "text-amber-300" : "text-muted-foreground"}`}>
+          <span className={`text-sm ${isAztecTheme ? "text-amber-300" : "text-muted-foreground"}`}>
             Min: {minBet} | Max: {maxBet}
           </span>
         </div>
@@ -51,13 +54,13 @@ export const BetControls: React.FC<BetControlsProps> = ({
           step={25}
           onValueChange={onBetChange}
           disabled={isSpinning || isDisabled}
-          className={gameTheme === SlotGameTheme.TREASURE_OF_AZTEC ? "bg-amber-800" : ""}
+          className={isAztecTheme ? "bg-amber-800" : ""}
         />
       </div>
       
       {gameResult && (
         <div className={`p-3 rounded-md border ${
-          gameTheme === SlotGameTheme.TREASURE_OF_AZTEC 
+          isAztecTheme 
             ? 'border-amber-600 bg-amber-900/50' 
             : 'border-border'
         }`}>
@@ -79,7 +82,7 @@ export const BetControls: React.FC<BetControlsProps> = ({
         onClick={onSpin} 
         disabled={isSpinning || isDisabled} 
         className={`w-full ${
-          gameTheme === SlotGameTheme.TREASURE_OF_AZTEC 
+          isAztecTheme 
             ? 'bg-yellow-600 hover:bg-yellow-700' 
             : 'bg-yellow-600 hover:bg-yellow-700'
         } ${isBonus ? 'animate-pulse' : ''}`}
