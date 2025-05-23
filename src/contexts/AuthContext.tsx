@@ -1,106 +1,108 @@
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { User } from '../types';
-import { authService } from '../services/api';
-import { toast } from "sonner";
+import React, { createContext, useState, useContext, useEffect } from "react";
+import { User } from "../types";
 
 interface AuthContextType {
   user: User | null;
-  loading: boolean;
-  login: (emailOrUsername: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
   register: (username: string, email: string, password: string) => Promise<void>;
-  logout: () => Promise<void>;
-  forgotPassword: (email: string) => Promise<void>;
+  logout: () => void;
+  loading: boolean;
+  updateUserBalance: (amount: number) => void;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType>({
+  user: null,
+  login: async () => {},
+  register: async () => {},
+  logout: () => {},
+  loading: true,
+  updateUserBalance: () => {},
+});
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+export const useAuth = () => useContext(AuthContext);
+
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Mock login function
+  const login = async (email: string, password: string) => {
+    // In a real app, this would make an API call
+    const mockUser: User = {
+      id: "1",
+      username: "demo_user",
+      email: email,
+      balance: 5000,
+      isAdmin: email.includes("admin"),
+      createdAt: new Date().toISOString(),
+      vipStats: {
+        level: "bronze",
+        lifetimeWagered: 10000,
+        currentPoints: 500,
+        nextLevelAt: 1000,
+        badges: [
+          {
+            id: "1",
+            name: "First Win",
+            description: "Won your first game",
+            imageUrl: "/badges/first-win.svg",
+            earnedAt: new Date().toISOString(),
+          },
+        ],
+      },
+    };
+    
+    setUser(mockUser);
+    localStorage.setItem("user", JSON.stringify(mockUser));
+  };
+
+  // Mock register function
+  const register = async (username: string, email: string, password: string) => {
+    // In a real app, this would make an API call
+    const mockUser: User = {
+      id: "1",
+      username: username,
+      email: email,
+      balance: 1000,
+      isAdmin: false,
+      createdAt: new Date().toISOString(),
+    };
+    
+    setUser(mockUser);
+    localStorage.setItem("user", JSON.stringify(mockUser));
+  };
+
+  // Logout function
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem("user");
+  };
+  
+  // Update user balance
+  const updateUserBalance = (amount: number) => {
+    if (user) {
+      const updatedUser = {
+        ...user,
+        balance: user.balance + amount
+      };
+      setUser(updatedUser);
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+    }
+  };
+
+  // Check for a saved user on initial load
   useEffect(() => {
-    // Check if user is already logged in (in a real app, this would check localStorage or a token)
-    const currentUser = authService.getCurrentUser();
-    setUser(currentUser);
+    const savedUser = localStorage.getItem("user");
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    }
     setLoading(false);
   }, []);
 
-  const login = async (emailOrUsername: string, password: string) => {
-    try {
-      setLoading(true);
-      const user = await authService.login(emailOrUsername, password);
-      setUser(user);
-      toast.success("Login successful");
-    } catch (error) {
-      toast.error("Login failed: " + (error as Error).message);
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const register = async (username: string, email: string, password: string) => {
-    try {
-      setLoading(true);
-      const user = await authService.register(username, email, password);
-      setUser(user);
-      toast.success("Registration successful");
-    } catch (error) {
-      toast.error("Registration failed: " + (error as Error).message);
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const logout = async () => {
-    try {
-      setLoading(true);
-      await authService.logout();
-      setUser(null);
-      toast.success("Logout successful");
-    } catch (error) {
-      toast.error("Logout failed");
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const forgotPassword = async (email: string) => {
-    try {
-      setLoading(true);
-      await authService.forgotPassword(email);
-      toast.success("Password reset email sent");
-    } catch (error) {
-      toast.error("Password reset failed: " + (error as Error).message);
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        loading,
-        login,
-        register,
-        logout,
-        forgotPassword,
-      }}
-    >
+    <AuthContext.Provider value={{ user, login, register, logout, loading, updateUserBalance }}>
       {children}
     </AuthContext.Provider>
   );
-};
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
 };

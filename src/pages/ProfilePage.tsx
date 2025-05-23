@@ -3,6 +3,7 @@ import { Layout } from "../components/layout/Layout";
 import { useAuth } from "../contexts/AuthContext";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { ThemeSwitcher } from "@/components/theme/ThemeSwitcher";
 
 const ProfilePage = () => {
   const { user } = useAuth();
@@ -66,6 +67,11 @@ const ProfilePage = () => {
                 </div>
               </CardContent>
             </Card>
+            
+            {/* Theme Switcher */}
+            <div className="mb-6">
+              <ThemeSwitcher />
+            </div>
             
             <Card>
               <CardHeader>
