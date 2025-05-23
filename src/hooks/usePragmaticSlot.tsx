@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { gameService, userService } from "../services/api";
@@ -328,12 +329,17 @@ export const usePragmaticSlot = () => {
       // In a real implementation, we'd need to process the grid and identify giant symbols
     }
     
-    // Update game state
+    // Update game state - FIX: Convert symbol IDs to numbers for winningLines
     setGameState(prev => ({
       ...prev,
       grid: newGrid,
       reels: [], // Not used for this game
-      winningLines: Array.from(winningSymbols).map(s => getSymbolByChar(s)?.id || "").filter(Boolean),
+      winningLines: Array.from(winningSymbols).map(s => {
+        // Convert string identifiers to numbers for compliance with type
+        const symbolInfo = getSymbolByChar(s);
+        // Parse the ID as a number if possible, otherwise use a fallback index
+        return symbolInfo ? parseInt(symbolInfo.id) || 0 : 0;
+      }),
       totalWin: prev.totalWin + winAmount,
       wildMeter: newWildMeter,
       currentMultiplier: multiplier,
