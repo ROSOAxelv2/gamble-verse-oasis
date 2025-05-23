@@ -5,7 +5,13 @@ import { gameService, userService } from "../services/api";
 import { GameType, SlotGameResult, TransactionType } from "../types";
 import { SlotGameTheme } from "../types/slots";
 import { toast } from "sonner";
-import { getSymbolsForTheme } from "../utils/slotSymbols";
+import { 
+  getSymbolsForTheme, 
+  CLASSIC_SYMBOLS, 
+  AZTEC_SYMBOLS,
+  ClassicSymbolsType,
+  AztecSymbolsType
+} from "../utils/slotSymbols";
 
 export const useSlotMachine = (initialGameTheme: SlotGameTheme = SlotGameTheme.CLASSIC) => {
   const { user } = useAuth();
@@ -48,20 +54,18 @@ export const useSlotMachine = (initialGameTheme: SlotGameTheme = SlotGameTheme.C
 
   useEffect(() => {
     // Reset or initialize game specific state when game changes
-    const symbols = getSymbolsForTheme(activeGame);
-    
     if (activeGame === SlotGameTheme.TREASURE_OF_AZTEC) {
       setVisibleReels([
-        [symbols.LOW_A, symbols.LOW_B, symbols.LOW_C],
-        [symbols.HIGH_A, symbols.WILD, symbols.HIGH_B],
-        [symbols.LOW_D, symbols.SCATTER, symbols.HIGH_C],
+        [AZTEC_SYMBOLS.LOW_A, AZTEC_SYMBOLS.LOW_B, AZTEC_SYMBOLS.LOW_C],
+        [AZTEC_SYMBOLS.HIGH_A, AZTEC_SYMBOLS.WILD, AZTEC_SYMBOLS.HIGH_B],
+        [AZTEC_SYMBOLS.LOW_D, AZTEC_SYMBOLS.SCATTER, AZTEC_SYMBOLS.HIGH_C],
       ]);
     } else {
       // Reset to classic layout
       setVisibleReels([
-        [symbols.CHERRY, symbols.CHERRY, symbols.CHERRY],
-        [symbols.LEMON, symbols.LEMON, symbols.LEMON],
-        [symbols.ORANGE, symbols.ORANGE, symbols.ORANGE],
+        [CLASSIC_SYMBOLS.CHERRY, CLASSIC_SYMBOLS.CHERRY, CLASSIC_SYMBOLS.CHERRY],
+        [CLASSIC_SYMBOLS.LEMON, CLASSIC_SYMBOLS.LEMON, CLASSIC_SYMBOLS.LEMON],
+        [CLASSIC_SYMBOLS.ORANGE, CLASSIC_SYMBOLS.ORANGE, CLASSIC_SYMBOLS.ORANGE],
       ]);
     }
     
@@ -79,7 +83,7 @@ export const useSlotMachine = (initialGameTheme: SlotGameTheme = SlotGameTheme.C
   const animateReels = (finalState: string[][]) => {
     setSpinning(true);
     
-    const symbols = getSymbolsForTheme(activeGame);
+    const symbols = activeGame === SlotGameTheme.TREASURE_OF_AZTEC ? AZTEC_SYMBOLS : CLASSIC_SYMBOLS;
     const symbolKeys = Object.keys(symbols);
     const totalFrames = 30;
     let frame = 0;
@@ -97,13 +101,15 @@ export const useSlotMachine = (initialGameTheme: SlotGameTheme = SlotGameTheme.C
                 tempReels[i][j] = finalState[i][j];
               } else {
                 const randomIndex = Math.floor(Math.random() * symbolKeys.length);
+                // Use type assertion since we know the key exists
                 const symbol = symbols[symbolKeys[randomIndex] as keyof typeof symbols];
-                tempReels[i][j] = symbol;
+                tempReels[i][j] = symbol as string;
               }
             } else {
               const randomIndex = Math.floor(Math.random() * symbolKeys.length);
+              // Use type assertion since we know the key exists
               const symbol = symbols[symbolKeys[randomIndex] as keyof typeof symbols];
-              tempReels[i][j] = symbol;
+              tempReels[i][j] = symbol as string;
             }
           }
         }
@@ -127,16 +133,15 @@ export const useSlotMachine = (initialGameTheme: SlotGameTheme = SlotGameTheme.C
   
   const processAztecSymbols = (reels: string[][]) => {
     // Count wilds and scatters
-    const symbols = getSymbolsForTheme(SlotGameTheme.TREASURE_OF_AZTEC);
     let wildCount = 0;
     let scatterCount = 0;
     
     for (let i = 0; i < reels.length; i++) {
       for (let j = 0; j < reels[i].length; j++) {
-        if (reels[i][j] === symbols.WILD) {
+        if (reels[i][j] === AZTEC_SYMBOLS.WILD) {
           wildCount++;
         }
-        if (reels[i][j] === symbols.SCATTER) {
+        if (reels[i][j] === AZTEC_SYMBOLS.SCATTER) {
           scatterCount++;
         }
       }
