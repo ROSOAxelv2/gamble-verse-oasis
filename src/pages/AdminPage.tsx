@@ -133,7 +133,7 @@ const AdminPage = () => {
   }, [user]);
 
   const updateGameConfig = async (config: GameConfig) => {
-    if (!user || !adminAuthService.hasPermission(user, 'canManageGameConfigs')) {
+    if (!user || !user.isAdmin) {
       toast.error("Insufficient permissions");
       return;
     }
@@ -168,19 +168,19 @@ const AdminPage = () => {
   };
 
   const canViewTab = (tab: string): boolean => {
-    if (!user) return false;
+    if (!user || !user.isAdmin) return false;
     
     switch (tab) {
       case 'users':
         return adminAuthService.hasPermission(user, 'canManageUsers');
       case 'games':
-        return adminAuthService.hasPermission(user, 'canManageGameConfigs');
+        return true; // All admin accounts can manage games
       case 'analytics':
         return adminAuthService.hasPermission(user, 'canViewAnalytics');
       case 'logs':
         return adminAuthService.hasPermission(user, 'canViewAuditLogs');
       case 'vip':
-        return adminAuthService.hasPermission(user, 'canManageGameConfigs');
+        return true; // All admin accounts can manage VIP
       default:
         return true;
     }
@@ -275,7 +275,6 @@ const AdminPage = () => {
                                   const updatedConfig = { ...config, enabled: checked };
                                   updateGameConfig(updatedConfig);
                                 }}
-                                disabled={!canViewTab('games')}
                               />
                             </div>
                           </div>
@@ -297,7 +296,6 @@ const AdminPage = () => {
                                     );
                                   }
                                 }}
-                                disabled={!canViewTab('games')}
                               />
                             </div>
                             <div className="space-y-2">
@@ -315,7 +313,6 @@ const AdminPage = () => {
                                     );
                                   }
                                 }}
-                                disabled={!canViewTab('games')}
                               />
                             </div>
                             <div className="space-y-2">
@@ -335,7 +332,6 @@ const AdminPage = () => {
                                     );
                                   }
                                 }}
-                                disabled={!canViewTab('games')}
                               />
                             </div>
                           </div>
@@ -343,7 +339,6 @@ const AdminPage = () => {
                         <CardFooter>
                           <Button
                             onClick={() => updateGameConfig(config)}
-                            disabled={!canViewTab('games')}
                           >
                             Save Changes
                           </Button>
