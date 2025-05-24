@@ -55,7 +55,7 @@ const AdminPage = () => {
       }
 
       try {
-        // Load game configurations including PG Soft Treasure of Aztec
+        // Load game configurations with all games enabled
         setGameConfigs([
           {
             id: "1",
@@ -71,7 +71,7 @@ const AdminPage = () => {
             minBet: 50,
             maxBet: 2000,
             payoutMultiplier: 10,
-            enabled: false,
+            enabled: true, // Changed to enabled
           },
           {
             id: "3",
@@ -79,14 +79,14 @@ const AdminPage = () => {
             minBet: 25,
             maxBet: 1500,
             payoutMultiplier: 8,
-            enabled: false,
+            enabled: true, // Changed to enabled
           },
           {
             id: "4",
             gameType: GameType.TREASURE_OF_AZTEC,
             minBet: 50,
             maxBet: 2500,
-            payoutMultiplier: 5000, // Max win multiplier per PG Soft specs
+            payoutMultiplier: 5000,
             enabled: true,
           },
           {
@@ -139,6 +139,7 @@ const AdminPage = () => {
     }
 
     try {
+      console.log('Updating game config:', config);
       await adminService.updateGameConfig(config);
       toast.success(`${config.gameType} configuration updated`);
       
@@ -146,6 +147,7 @@ const AdminPage = () => {
         prevConfigs.map(c => (c.id === config.id ? config : c))
       );
     } catch (error) {
+      console.error('Failed to update game configuration:', error);
       toast.error("Failed to update game configuration");
     }
   };
@@ -163,7 +165,7 @@ const AdminPage = () => {
       case GameType.CRASH:
         return "Crash Game";
       default:
-        return String(gameType).charAt(0).toUpperCase() + String(gameType).slice(1);
+        return gameType.toString().charAt(0).toUpperCase() + gameType.toString().slice(1);
     }
   };
 

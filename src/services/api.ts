@@ -694,10 +694,11 @@ export const adminService = {
         }
 
         try {
+          console.log('Updating game configuration in API:', config);
           // Update the game configuration in our mock data
           const configIndex = gameConfigurations.findIndex(c => c.id === config.id);
           if (configIndex !== -1) {
-            gameConfigurations[configIndex] = config;
+            gameConfigurations[configIndex] = { ...config };
             
             // Log the admin action
             adminAuthService.logAction(
@@ -706,12 +707,14 @@ export const adminService = {
               `Updated ${config.gameType} configuration: enabled=${config.enabled}, minBet=${config.minBet}, maxBet=${config.maxBet}`
             );
             
-            console.log('Game configuration updated:', config);
+            console.log('Game configuration updated successfully:', config);
             resolve();
           } else {
+            console.error('Game configuration not found for ID:', config.id);
             reject(new Error('Game configuration not found'));
           }
         } catch (error) {
+          console.error('Error updating game configuration:', error);
           reject(new Error('Failed to update game configuration'));
         }
       }, 500);
