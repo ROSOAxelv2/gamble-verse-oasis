@@ -1,6 +1,6 @@
 
 import React, { createContext, useState, useContext, useEffect } from "react";
-import { User } from "../types";
+import { User, VipLevel } from "../types";
 
 interface AuthContextType {
   user: User | null;
@@ -9,6 +9,7 @@ interface AuthContextType {
   logout: () => void;
   loading: boolean;
   updateUserBalance: (amount: number) => void;
+  forgotPassword: (email: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -18,6 +19,7 @@ const AuthContext = createContext<AuthContextType>({
   logout: () => {},
   loading: true,
   updateUserBalance: () => {},
+  forgotPassword: async () => {},
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -37,7 +39,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       isAdmin: email.includes("admin"),
       createdAt: new Date().toISOString(),
       vipStats: {
-        level: "bronze",
+        level: VipLevel.BRONZE,
         lifetimeWagered: 10000,
         currentPoints: 500,
         nextLevelAt: 1000,
@@ -73,6 +75,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.setItem("user", JSON.stringify(mockUser));
   };
 
+  // Mock forgot password function
+  const forgotPassword = async (email: string) => {
+    // In a real app, this would make an API call to send a reset email
+    console.log(`Password reset email would be sent to: ${email}`);
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  };
+
   // Logout function
   const logout = () => {
     setUser(null);
@@ -101,7 +111,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, loading, updateUserBalance }}>
+    <AuthContext.Provider value={{ user, login, register, logout, loading, updateUserBalance, forgotPassword }}>
       {children}
     </AuthContext.Provider>
   );
