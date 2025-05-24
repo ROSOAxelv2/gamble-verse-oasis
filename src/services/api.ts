@@ -666,22 +666,17 @@ export const adminService = {
     });
   },
 
-  updateGameConfig: async (config: GameConfig): Promise<GameConfig> => {
+  updateGameConfig: async (config: GameConfig): Promise<void> => {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        if (!currentUser?.isAdmin) {
-          reject(new Error('Unauthorized'));
-          return;
+        try {
+          // In a real application, this would make an API call to update the configuration
+          // For now, we'll simulate a successful update
+          console.log('Game configuration updated:', config);
+          resolve();
+        } catch (error) {
+          reject(new Error('Failed to update game configuration'));
         }
-        
-        const index = gameConfigurations.findIndex(c => c.id === config.id);
-        if (index === -1) {
-          reject(new Error('Configuration not found'));
-          return;
-        }
-        
-        gameConfigurations[index] = { ...config };
-        resolve(gameConfigurations[index]);
       }, 500);
     });
   },
