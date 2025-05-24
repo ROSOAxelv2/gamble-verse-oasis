@@ -1,12 +1,26 @@
-
 export interface User {
   id: string;
   username: string;
   email: string;
   balance: number;
   isAdmin: boolean;
+  role?: AdminRole;
   createdAt: string;
   vipStats?: VipStats;
+}
+
+export enum AdminRole {
+  SUPER_ADMIN = 'super_admin',
+  GAME_MODERATOR = 'game_moderator',
+}
+
+export interface AdminPermissions {
+  canManageUsers: boolean;
+  canManageGameConfigs: boolean;
+  canViewAuditLogs: boolean;
+  canManagePayouts: boolean;
+  canModerateBalances: boolean;
+  canViewAnalytics: boolean;
 }
 
 export interface VipStats {
@@ -60,6 +74,7 @@ export enum GameType {
   PLINKO = 'plinko',
   SLOTS = 'slots',
   CRASH = 'crash',
+  TREASURE_OF_AZTEC = 'treasure_of_aztec', // PG Soft attribution
 }
 
 export interface Transaction {
@@ -112,6 +127,29 @@ export interface CrashGameResult {
   isWin: boolean;
 }
 
+// PG Soft Treasure of Aztec specific types
+export interface PGSoftTreasureConfig extends GameConfig {
+  gameProvider: 'PG_SOFT';
+  officialName: 'Treasures of Aztec';
+  rtp: 96.71;
+  volatility: 'High';
+  gridSize: {
+    rows: 6;
+    reels: 5;
+  };
+  adjacencyRequirement: 4;
+  scatterFreeSpin: {
+    4: 7;
+    5: 10;
+    6: 12;
+  };
+  cascadesEnabled: true;
+  wildMeterThreshold: 10;
+  wildMeterMultipliers: number[];
+  giantSymbolsEnabled: true;
+  sourceUrl: 'https://www.slotstemple.com/us/free-slots/treasures-of-aztec/';
+}
+
 export interface PlinkoConfig extends GameConfig {
   rows: number;
   buckets: PlinkoPayoutBucket[];
@@ -145,4 +183,20 @@ export interface AdminAnalytics {
   houseEdge: number;
   activePlayers: number;
   gamePopularity: Record<GameType, number>;
+}
+
+export interface SystemHealth {
+  uptime: number;
+  dbConnections: number;
+  activeGames: number;
+  errorRate: number;
+}
+
+export interface AuditLog {
+  id: string;
+  userId: string;
+  action: string;
+  details: string;
+  timestamp: string;
+  ipAddress?: string;
 }

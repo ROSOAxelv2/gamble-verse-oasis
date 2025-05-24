@@ -1,0 +1,190 @@
+
+{
+  "$schema": "PG Soft Treasures of Aztec Configuration",
+  "source": "https://www.slotstemple.com/us/free-slots/treasures-of-aztec/",
+  "gameInfo": {
+    "provider": "PG Soft",
+    "officialName": "Treasures of Aztec",
+    "rtp": 96.71,
+    "volatility": "High",
+    "maxWin": "5000x bet",
+    "releaseDate": "2021"
+  },
+  "gridConfiguration": {
+    "rows": 6,
+    "reels": 5,
+    "totalPositions": 30,
+    "adjacencyRequirement": 4,
+    "payDirection": "left_to_right_adjacent"
+  },
+  "symbols": {
+    "blank": {
+      "id": "blank",
+      "symbol": "⬜",
+      "name": "Blank",
+      "type": "blank",
+      "payouts": {}
+    },
+    "low_gems": {
+      "blue_gem": {
+        "id": "blue_gem",
+        "symbol": "🔷",
+        "name": "Blue Gem",
+        "type": "low",
+        "payouts": {
+          "4": 0.5,
+          "5": 1.0,
+          "6": 2.0
+        }
+      },
+      "purple_gem": {
+        "id": "purple_gem", 
+        "symbol": "🔮",
+        "name": "Purple Gem",
+        "type": "low",
+        "payouts": {
+          "4": 0.5,
+          "5": 1.0,
+          "6": 2.0
+        }
+      },
+      "red_gem": {
+        "id": "red_gem",
+        "symbol": "🔴",
+        "name": "Red Gem", 
+        "type": "low",
+        "payouts": {
+          "4": 0.6,
+          "5": 1.2,
+          "6": 2.5
+        }
+      },
+      "green_gem": {
+        "id": "green_gem",
+        "symbol": "🟢",
+        "name": "Green Gem",
+        "type": "low", 
+        "payouts": {
+          "4": 0.6,
+          "5": 1.2,
+          "6": 2.5
+        }
+      }
+    },
+    "high_aztec": {
+      "jaguar": {
+        "id": "jaguar",
+        "symbol": "🐆",
+        "name": "Jaguar",
+        "type": "high",
+        "payouts": {
+          "4": 2.0,
+          "5": 5.0,
+          "6": 10.0
+        }
+      },
+      "eagle": {
+        "id": "eagle", 
+        "symbol": "🦅",
+        "name": "Eagle",
+        "type": "high",
+        "payouts": {
+          "4": 2.5,
+          "5": 6.0,
+          "6": 12.0
+        }
+      },
+      "serpent": {
+        "id": "serpent",
+        "symbol": "🐍", 
+        "name": "Feathered Serpent",
+        "type": "high",
+        "payouts": {
+          "4": 3.0,
+          "5": 8.0,
+          "6": 15.0
+        }
+      },
+      "pyramid": {
+        "id": "pyramid",
+        "symbol": "🔺",
+        "name": "Pyramid",
+        "type": "high",
+        "payouts": {
+          "4": 4.0,
+          "5": 10.0,
+          "6": 20.0
+        }
+      }
+    },
+    "special": {
+      "wild": {
+        "id": "wild",
+        "symbol": "⭐",
+        "name": "Golden Sun Wild",
+        "type": "wild",
+        "substitutes": ["blue_gem", "purple_gem", "red_gem", "green_gem", "jaguar", "eagle", "serpent", "pyramid"],
+        "payouts": {
+          "4": 5.0,
+          "5": 15.0,
+          "6": 50.0
+        }
+      },
+      "scatter": {
+        "id": "scatter",
+        "symbol": "🌟",
+        "name": "Aztec Temple Scatter",
+        "type": "scatter",
+        "payouts": {
+          "3": 1.0,
+          "4": 5.0,
+          "5": 10.0,
+          "6": 50.0
+        },
+        "triggersFreeSpin": true
+      }
+    }
+  },
+  "freeSpinConfiguration": {
+    "triggerScatters": {
+      "4": 7,
+      "5": 10, 
+      "6": 12
+    },
+    "retrigger": {
+      "3": 5,
+      "4": 7,
+      "5": 10
+    },
+    "giantSymbolsEnabled": true,
+    "giantSymbolReels": [2, 3, 4, 5],
+    "giantSymbolChance": 0.15,
+    "stickyGiantChance": 0.5
+  },
+  "cascadeConfiguration": {
+    "enabled": true,
+    "maxCascades": 10,
+    "cascadeMultipliers": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  },
+  "wildMeterConfiguration": {
+    "threshold": 10,
+    "multipliers": [2, 3, 4, 5],
+    "resetOnTrigger": true
+  },
+  "reelStrips": {
+    "baseGame": {
+      "reel1": ["🔷", "🔮", "🔴", "🟢", "🐆", "🦅", "🐍", "🔺", "⭐", "🌟", "⬜"],
+      "reel2": ["🔷", "🔮", "🔴", "🟢", "🐆", "🦅", "🐍", "🔺", "⭐", "🌟", "⬜"],
+      "reel3": ["🔷", "🔮", "🔴", "🟢", "🐆", "🦅", "🐍", "🔺", "⭐", "🌟", "⬜"],
+      "reel4": ["🔷", "🔮", "🔴", "🟢", "🐆", "🦅", "🐍", "🔺", "⭐", "🌟", "⬜"],
+      "reel5": ["🔷", "🔮", "🔴", "🟢", "🐆", "🦅", "🐍", "🔺", "⭐", "🌟", "⬜"]
+    },
+    "freeSpins": {
+      "reel1": ["🔷", "🔮", "🔴", "🟢", "🐆", "🦅", "🐍", "🔺", "⭐", "🌟"],
+      "reel2": ["🔷", "🔮", "🔴", "🟢", "🐆", "🦅", "🐍", "🔺", "⭐", "🌟"],
+      "reel3": ["🔷", "🔮", "🔴", "🟢", "🐆", "🦅", "🐍", "🔺", "⭐", "🌟"],
+      "reel4": ["🔷", "🔮", "🔴", "🟢", "🐆", "🦅", "🐍", "🔺", "⭐", "🌟"],
+      "reel5": ["🔷", "🔮", "🔴", "🟢", "🐆", "🦅", "🐍", "🔺", "⭐", "🌟"]
+    }
+  }
+}
