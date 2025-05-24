@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Layout } from "../components/layout/Layout";
 import { adminService } from "../services/api";
 import { adminAuthService } from "../services/adminAuth";
+import { useAuth } from "../contexts/AuthContext";
 import { User, GameConfig, GameType, AdminRole, SystemHealth, AuditLog } from "../types";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -30,11 +31,11 @@ import { VipConfigTab } from "../components/admin/VipConfigTab";
 import { Shield, Users, Settings, BarChart3, AlertTriangle, CheckCircle, Activity } from "lucide-react";
 
 const AdminPage = () => {
+  const { user } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
   const [gameConfigs, setGameConfigs] = useState<GameConfig[]>([]);
   const [systemHealth, setSystemHealth] = useState<SystemHealth | null>(null);
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
-  const [currentAdmin, setCurrentAdmin] = useState<User | null>(null);
   const [loading, setLoading] = useState({
     users: true,
     configs: true,
@@ -43,12 +44,6 @@ const AdminPage = () => {
   });
 
   useEffect(() => {
-    // Get current admin user from localStorage
-    const adminUser = localStorage.getItem("adminUser");
-    if (adminUser) {
-      setCurrentAdmin(JSON.parse(adminUser));
-    }
-
     const fetchAdminData = async () => {
       try {
         const usersData = await adminService.getAllUsers();
@@ -94,6 +89,14 @@ const AdminPage = () => {
             payoutMultiplier: 5000, // Max win multiplier per PG Soft specs
             enabled: true,
           },
+          {
+            id: "5",
+            gameType: GameType.CRASH,
+            minBet: 50,
+            maxBet: 5000,
+            payoutMultiplier: 10,
+            enabled: true,
+          },
         ]);
         setLoading(prev => ({ ...prev, configs: false }));
       } catch (error) {
@@ -112,9 +115,9 @@ const AdminPage = () => {
       }
 
       // Load audit logs (Super Admin only)
-      if (currentAdmin?.role === AdminRole.SUPER_ADMIN) {
+      if (user?.role === AdminRole.SUPER_ADMIN) {
         try {
-          const logs = await adminAuthService.getAuditLogs(currentAdmin.id);
+          const logs = await adminAuthService.getAuditLogs(user.id);
           setAuditLogs(logs);
         } catch (error) {
           toast.error("Failed to load audit logs");
@@ -127,10 +130,10 @@ const AdminPage = () => {
     };
 
     fetchAdminData();
-  }, [currentAdmin]);
+  }, [user]);
 
   const updateGameConfig = async (config: GameConfig) => {
-    if (!currentAdmin || !adminAuthService.hasPermission(currentAdmin, 'canManageGameConfigs')) {
+    if (!user || !adminAuthService.hasPermission(user, 'canManageGameConfigs')) {
       toast.error("Insufficient permissions");
       return;
     }
@@ -157,25 +160,27 @@ const AdminPage = () => {
         return "Plinko";
       case GameType.SLOTS:
         return "Classic Slots";
+      case GameType.CRASH:
+        return "Crash Game";
       default:
         return gameType.charAt(0).toUpperCase() + gameType.slice(1);
     }
   };
 
   const canViewTab = (tab: string): boolean => {
-    if (!currentAdmin) return false;
+    if (!user) return false;
     
     switch (tab) {
       case 'users':
-        return adminAuthService.hasPermission(currentAdmin, 'canManageUsers');
+        return adminAuthService.hasPermission(user, 'canManageUsers');
       case 'games':
-        return adminAuthService.hasPermission(currentAdmin, 'canManageGameConfigs');
+        return adminAuthService.hasPermission(user, 'canManageGameConfigs');
       case 'analytics':
-        return adminAuthService.hasPermission(currentAdmin, 'canViewAnalytics');
+        return adminAuthService.hasPermission(user, 'canViewAnalytics');
       case 'logs':
-        return adminAuthService.hasPermission(currentAdmin, 'canViewAuditLogs');
+        return adminAuthService.hasPermission(user, 'canViewAuditLogs');
       case 'vip':
-        return adminAuthService.hasPermission(currentAdmin, 'canManageGameConfigs');
+        return adminAuthService.hasPermission(user, 'canManageGameConfigs');
       default:
         return true;
     }
@@ -188,9 +193,9 @@ const AdminPage = () => {
           <div>
             <h1 className="text-3xl font-bold">Admin Panel</h1>
             <p className="text-muted-foreground">
-              Logged in as: {currentAdmin?.email} 
+              Logged in as: {user?.email} 
               <Badge variant="secondary" className="ml-2">
-                {currentAdmin?.role?.replace('_', ' ').toUpperCase()}
+                {user?.role?.replace('_', ' ').toUpperCase() || 'ADMIN'}
               </Badge>
             </p>
           </div>
@@ -270,6 +275,7 @@ const AdminPage = () => {
                                   const updatedConfig = { ...config, enabled: checked };
                                   updateGameConfig(updatedConfig);
                                 }}
+                                disabled={!canViewTab('games')}
                               />
                             </div>
                           </div>
@@ -291,6 +297,7 @@ const AdminPage = () => {
                                     );
                                   }
                                 }}
+                                disabled={!canViewTab('games')}
                               />
                             </div>
                             <div className="space-y-2">
@@ -308,6 +315,7 @@ const AdminPage = () => {
                                     );
                                   }
                                 }}
+                                disabled={!canViewTab('games')}
                               />
                             </div>
                             <div className="space-y-2">
@@ -327,6 +335,7 @@ const AdminPage = () => {
                                     );
                                   }
                                 }}
+                                disabled={!canViewTab('games')}
                               />
                             </div>
                           </div>
@@ -334,7 +343,7 @@ const AdminPage = () => {
                         <CardFooter>
                           <Button
                             onClick={() => updateGameConfig(config)}
-                            disabled={!config.enabled}
+                            disabled={!canViewTab('games')}
                           >
                             Save Changes
                           </Button>
@@ -474,6 +483,10 @@ const AdminPage = () => {
                       <div className="bg-primary w-full opacity-70" style={{ height: '5%' }}></div>
                       <div className="mt-2 text-sm">Slots</div>
                     </div>
+                    <div className="flex flex-col items-center flex-1">
+                      <div className="bg-primary w-full opacity-70" style={{ height: '40%' }}></div>
+                      <div className="mt-2 text-sm">Crash</div>
+                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -495,7 +508,7 @@ const AdminPage = () => {
               <CardContent>
                 {loading.logs ? (
                   <div className="text-center py-4">Loading audit logs...</div>
-                ) : currentAdmin?.role !== AdminRole.SUPER_ADMIN ? (
+                ) : user?.role !== AdminRole.SUPER_ADMIN ? (
                   <div className="text-center py-8 text-muted-foreground">
                     Audit logs are only available to Super Administrators
                   </div>

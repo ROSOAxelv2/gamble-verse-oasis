@@ -1,5 +1,6 @@
 import { User, Transaction, GameType, TransactionType, DiceGameResult, GameConfig, PlinkoGameResult, SlotGameResult, AdminAnalytics, VipLevel, CrashGameResult, CrashConfig } from '../types';
 import { vipService } from './vip';
+import { adminAuthService } from './adminAuth';
 
 // Mock user data
 let currentUser: User | null = null;
@@ -25,6 +26,7 @@ const registeredUsers: User[] = [
     email: 'admin@example.com',
     balance: 5000,
     isAdmin: true,
+    role: 'game_moderator' as any, // Normal admin with game management permissions
     createdAt: new Date().toISOString(),
     vipStats: {
       level: VipLevel.GOLD,
@@ -34,6 +36,15 @@ const registeredUsers: User[] = [
       badges: []
     }
   },
+  {
+    id: '3',
+    username: 'superadmin',
+    email: 'superadmin@lovablecasino.com',
+    balance: 0,
+    isAdmin: true,
+    role: 'super_admin' as any, // Super admin with all permissions
+    createdAt: new Date().toISOString(),
+  }
 ];
 
 // Mock game configurations
@@ -68,6 +79,14 @@ const gameConfigurations: GameConfig[] = [
     minBet: 50,
     maxBet: 5000,
     payoutMultiplier: 10,
+    enabled: true,
+  },
+  {
+    id: '5',
+    gameType: GameType.TREASURE_OF_AZTEC,
+    minBet: 50,
+    maxBet: 2500,
+    payoutMultiplier: 5000,
     enabled: true,
   },
 ];
@@ -669,11 +688,29 @@ export const adminService = {
   updateGameConfig: async (config: GameConfig): Promise<void> => {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
+        if (!currentUser?.isAdmin) {
+          reject(new Error('Unauthorized'));
+          return;
+        }
+
         try {
-          // In a real application, this would make an API call to update the configuration
-          // For now, we'll simulate a successful update
-          console.log('Game configuration updated:', config);
-          resolve();
+          // Update the game configuration in our mock data
+          const configIndex = gameConfigurations.findIndex(c => c.id === config.id);
+          if (configIndex !== -1) {
+            gameConfigurations[configIndex] = config;
+            
+            // Log the admin action
+            adminAuthService.logAction(
+              currentUser.id, 
+              'UPDATE_GAME_CONFIG', 
+              `Updated ${config.gameType} configuration: enabled=${config.enabled}, minBet=${config.minBet}, maxBet=${config.maxBet}`
+            );
+            
+            console.log('Game configuration updated:', config);
+            resolve();
+          } else {
+            reject(new Error('Game configuration not found'));
+          }
         } catch (error) {
           reject(new Error('Failed to update game configuration'));
         }
