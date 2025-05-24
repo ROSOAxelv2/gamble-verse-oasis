@@ -163,7 +163,7 @@ const AdminPage = () => {
       case GameType.CRASH:
         return "Crash Game";
       default:
-        return gameType.toString().charAt(0).toUpperCase() + gameType.toString().slice(1);
+        return String(gameType).charAt(0).toUpperCase() + String(gameType).slice(1);
     }
   };
 
