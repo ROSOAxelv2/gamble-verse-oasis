@@ -11,7 +11,7 @@ import {
 } from "../utils/pragmaticSlotSymbols";
 
 export const usePragmaticSlot = () => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [betAmount, setBetAmount] = useState<number>(50);
   const [loading, setLoading] = useState<boolean>(false);
   const [spinning, setSpinning] = useState<boolean>(false);
@@ -47,10 +47,11 @@ export const usePragmaticSlot = () => {
           maxBet: pragmaticConfig.maxBet || 2500,
           enabled: pragmaticConfig.enabled !== false // Default to true if undefined
         });
+        console.log("PragmaticSlot: Game config loaded", pragmaticConfig);
       } catch (error) {
-        console.error("Failed to load pragmatic game config:", error);
+        console.error("PragmaticSlot: Failed to load pragmatic game config:", error);
         // Keep default config if API fails
-        console.log("Using default pragmatic slot machine configuration");
+        console.log("PragmaticSlot: Using default pragmatic slot machine configuration");
       }
     };
     
@@ -78,12 +79,24 @@ export const usePragmaticSlot = () => {
   };
   
   const playSlots = async () => {
+    console.log("PragmaticSlot: Play slots called");
+    console.log("PragmaticSlot: User state:", user);
+    console.log("PragmaticSlot: Auth loading:", authLoading);
+    
+    if (authLoading) {
+      console.log("PragmaticSlot: Still loading auth, please wait");
+      toast.error("Still loading, please wait...");
+      return;
+    }
+    
     if (!user) {
+      console.log("PragmaticSlot: No user found, authentication required");
       toast.error("You must be logged in to play");
       return;
     }
     
     if (betAmount < config.minBet || betAmount > config.maxBet) {
+      console.log("PragmaticSlot: Invalid bet amount", betAmount, config);
       toast.error(`Bet must be between ${config.minBet} and ${config.maxBet}`);
       return;
     }
@@ -91,6 +104,7 @@ export const usePragmaticSlot = () => {
     try {
       setLoading(true);
       setSpinning(true);
+      console.log("PragmaticSlot: Starting spin with bet amount:", betAmount);
       
       // Use free spin if available, otherwise place a bet
       if (gameState.freeSpinsRemaining > 0 && gameState.isFreeSpin) {
@@ -98,9 +112,12 @@ export const usePragmaticSlot = () => {
           ...prev,
           freeSpinsRemaining: prev.freeSpinsRemaining - 1
         }));
+        console.log("PragmaticSlot: Using free spin");
       } else {
         // Regular spin - place bet
+        console.log("PragmaticSlot: Placing bet via userService");
         await userService.updateBalance(betAmount, TransactionType.BET, GameType.TREASURE_OF_AZTEC);
+        console.log("PragmaticSlot: Bet placed successfully");
       }
       
       // Simulate spin result (in real implementation, this would come from backend)
@@ -127,14 +144,16 @@ export const usePragmaticSlot = () => {
           setGameResult({ winAmount, isWin: true });
           userService.updateBalance(winAmount, TransactionType.WIN, GameType.TREASURE_OF_AZTEC);
           toast.success(`You won ${winAmount.toFixed(0)} credits!`);
+          console.log("PragmaticSlot: Win result:", winAmount);
         } else {
           setGameResult({ winAmount: 0, isWin: false });
           toast.error("Better luck next time!");
+          console.log("PragmaticSlot: No win this round");
         }
       }, 2000);
       
     } catch (error) {
-      console.error("Pragmatic slot game error:", error);
+      console.error("PragmaticSlot: Pragmatic slot game error:", error);
       toast.error("Failed to play: " + (error as Error).message);
       setSpinning(false);
     } finally {

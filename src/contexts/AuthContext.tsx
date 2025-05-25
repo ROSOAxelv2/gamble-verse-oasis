@@ -1,4 +1,5 @@
 
+
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { User, VipLevel } from "../types";
 
@@ -30,6 +31,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Mock login function
   const login = async (email: string, password: string) => {
+    console.log("AuthContext: Login attempt for", email);
     // In a real app, this would make an API call
     const mockUser: User = {
       id: "1",
@@ -57,10 +59,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     setUser(mockUser);
     localStorage.setItem("user", JSON.stringify(mockUser));
+    console.log("AuthContext: User logged in successfully", mockUser);
   };
 
   // Mock register function
   const register = async (username: string, email: string, password: string) => {
+    console.log("AuthContext: Register attempt for", username, email);
     // In a real app, this would make an API call
     const mockUser: User = {
       id: "1",
@@ -73,6 +77,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     setUser(mockUser);
     localStorage.setItem("user", JSON.stringify(mockUser));
+    console.log("AuthContext: User registered successfully", mockUser);
   };
 
   // Mock forgot password function
@@ -85,6 +90,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Logout function
   const logout = () => {
+    console.log("AuthContext: User logging out");
     setUser(null);
     localStorage.removeItem("user");
   };
@@ -98,17 +104,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       };
       setUser(updatedUser);
       localStorage.setItem("user", JSON.stringify(updatedUser));
+      console.log("AuthContext: User balance updated", updatedUser.balance);
     }
   };
 
   // Check for a saved user on initial load
   useEffect(() => {
+    console.log("AuthContext: Checking for saved user in localStorage");
     const savedUser = localStorage.getItem("user");
     if (savedUser) {
-      setUser(JSON.parse(savedUser));
+      try {
+        const parsedUser = JSON.parse(savedUser);
+        setUser(parsedUser);
+        console.log("AuthContext: Restored user from localStorage", parsedUser);
+      } catch (error) {
+        console.error("AuthContext: Error parsing saved user", error);
+        localStorage.removeItem("user");
+      }
+    } else {
+      console.log("AuthContext: No saved user found");
     }
     setLoading(false);
   }, []);
+
+  // Debug current user state
+  useEffect(() => {
+    console.log("AuthContext: Current user state:", user);
+    console.log("AuthContext: Loading state:", loading);
+  }, [user, loading]);
 
   return (
     <AuthContext.Provider value={{ user, login, register, logout, loading, updateUserBalance, forgotPassword }}>
@@ -116,3 +139,4 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     </AuthContext.Provider>
   );
 };
+

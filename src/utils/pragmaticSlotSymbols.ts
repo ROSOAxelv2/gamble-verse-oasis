@@ -1,4 +1,3 @@
-
 import { PragmaticSymbol } from "../types/slots";
 
 // Symbol placeholders for Pragmatic Aztec clone
@@ -135,6 +134,9 @@ export const PRAGMATIC_SYMBOLS: Record<string, PragmaticSymbol> = {
     canBeGiant: false
   }
 };
+
+// Export the type for all symbol keys
+export type PragmaticSymbolType = keyof typeof PRAGMATIC_SYMBOLS;
 
 // Default configuration for Pragmatic Aztec clone
 export const DEFAULT_PRAGMATIC_CONFIG = {
