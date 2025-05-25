@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { gameService, userService } from "../services/api";
@@ -24,7 +23,7 @@ export const useSlotMachine = (initialGameTheme: SlotGameTheme = SlotGameTheme.C
   const [config, setConfig] = useState<{ minBet: number; maxBet: number; enabled: boolean }>({
     minBet: 25,
     maxBet: 1500,
-    enabled: false
+    enabled: true // Default to enabled
   });
   
   // Aztec game features
@@ -39,13 +38,14 @@ export const useSlotMachine = (initialGameTheme: SlotGameTheme = SlotGameTheme.C
       try {
         const slotsConfig = await gameService.getGameConfig(GameType.SLOTS);
         setConfig({
-          minBet: slotsConfig.minBet,
-          maxBet: slotsConfig.maxBet,
-          enabled: slotsConfig.enabled
+          minBet: slotsConfig.minBet || 25,
+          maxBet: slotsConfig.maxBet || 1500,
+          enabled: slotsConfig.enabled !== false // Default to true if undefined
         });
       } catch (error) {
-        console.error(error);
-        toast.error("Failed to load game configuration");
+        console.error("Failed to load game config:", error);
+        // Keep default config if API fails
+        console.log("Using default slot machine configuration");
       }
     };
     
@@ -227,7 +227,7 @@ export const useSlotMachine = (initialGameTheme: SlotGameTheme = SlotGameTheme.C
       }
       
     } catch (error) {
-      console.error(error);
+      console.error("Slot game error:", error);
       toast.error("Failed to play: " + (error as Error).message);
     } finally {
       setLoading(false);
