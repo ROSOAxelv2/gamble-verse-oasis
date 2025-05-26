@@ -1,5 +1,5 @@
 
-import { User, AdminRole, AuditLog } from "../../types";
+import { User, UserRole, AuditLog } from "../../types";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -39,7 +39,7 @@ export const AuditLogsSection = ({ user, auditLogs, loading }: AuditLogsSectionP
       <CardContent>
         {loading ? (
           <div className="text-center py-4">Loading audit logs...</div>
-        ) : user?.role !== AdminRole.SUPER_ADMIN ? (
+        ) : user?.role !== UserRole.SUPER_ADMIN ? (
           <div className="text-center py-8 text-muted-foreground">
             Audit logs are only available to Super Administrators
           </div>

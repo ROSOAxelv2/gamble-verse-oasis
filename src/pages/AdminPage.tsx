@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Layout } from "../components/layout/Layout";
 import { adminService } from "../services/api";
@@ -13,9 +14,11 @@ import { UsersSection } from "../components/admin/UsersSection";
 import { AnalyticsSection } from "../components/admin/AnalyticsSection";
 import { AuditLogsSection } from "../components/admin/AuditLogsSection";
 import { SystemHealthCard } from "../components/admin/SystemHealthCard";
+import { useAdminPermissions } from "../components/admin/AdminPermissions";
 
 const AdminPage = () => {
   const { user } = useAuth();
+  const { canViewTab } = useAdminPermissions(user);
   const [users, setUsers] = useState<User[]>([]);
   const [gameConfigs, setGameConfigs] = useState<GameConfig[]>([]);
   const [systemHealth, setSystemHealth] = useState<SystemHealth | null>(null);
@@ -53,7 +56,6 @@ const AdminPage = () => {
       } catch (error) {
         console.error("AdminPage: Failed to load game configurations:", error);
         toast.error("Failed to load game configurations");
-        // Fallback to empty array if API fails
         setGameConfigs([]);
       } finally {
         setLoading(prev => ({ ...prev, configs: false }));
@@ -61,7 +63,7 @@ const AdminPage = () => {
 
       // Load system health
       try {
-        const health = await adminAuthService.getSystemHealth();
+        const health = await adminService.getSystemHealth();
         setSystemHealth(health);
       } catch (error) {
         toast.error("Failed to load system health");
@@ -70,9 +72,9 @@ const AdminPage = () => {
       }
 
       // Load audit logs (Super Admin only)
-      if (user?.role === 'super_admin') {
+      if (rbacService.isSuperAdmin(user)) {
         try {
-          const logs = await adminAuthService.getAuditLogs(user.id);
+          const logs = await adminService.getAuditLogs();
           setAuditLogs(logs);
         } catch (error) {
           toast.error("Failed to load audit logs");
@@ -88,25 +90,6 @@ const AdminPage = () => {
       fetchAdminData();
     }
   }, [user]);
-
-  const canViewTab = (tab: string): boolean => {
-    if (!user) return false;
-    
-    switch (tab) {
-      case 'users':
-        return rbacService.canManageUsers(user);
-      case 'games':
-        return rbacService.canManageGameConfigs(user);
-      case 'analytics':
-        return rbacService.hasPermission(user, 'canViewAnalytics');
-      case 'logs':
-        return rbacService.canViewAuditLogs(user);
-      case 'vip':
-        return rbacService.canAccessAdminPanel(user);
-      default:
-        return false;
-    }
-  };
 
   const getRoleDisplayName = (role: string) => {
     switch (role) {

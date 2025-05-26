@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { GameConfig, GameType, User } from "../../types";
 import { adminService } from "../../services/api";
+import { rbacService } from "../../services/rbac";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,7 +49,7 @@ export const GameConfigSection = ({
   };
 
   const updateGameConfig = async (config: GameConfig) => {
-    if (!user || !user.isAdmin) {
+    if (!rbacService.canManageGameConfigs(user)) {
       toast.error("Insufficient permissions");
       return;
     }

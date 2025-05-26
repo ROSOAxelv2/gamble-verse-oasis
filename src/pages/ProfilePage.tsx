@@ -1,12 +1,23 @@
 
 import { Layout } from "../components/layout/Layout";
 import { useAuth } from "../contexts/AuthContext";
+import { rbacService } from "../services/rbac";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ThemeSwitcher } from "@/components/theme/ThemeSwitcher";
 
 const ProfilePage = () => {
   const { user } = useAuth();
+
+  const getRoleDisplayName = (role: string) => {
+    switch (role) {
+      case 'super_admin': return 'Super Administrator';
+      case 'admin': return 'Administrator';
+      case 'sponsored': return 'Sponsored Player';
+      case 'normal': return 'Player';
+      default: return 'Player';
+    }
+  };
 
   return (
     <Layout requireAuth>
@@ -31,8 +42,14 @@ const ProfilePage = () => {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Account Type</p>
-                  <p className="font-medium">{user?.isAdmin ? "Administrator" : "Player"}</p>
+                  <p className="font-medium">{getRoleDisplayName(user?.role || 'normal')}</p>
                 </div>
+                {rbacService.isSponsored(user) && user?.luckMultiplier && (
+                  <div>
+                    <p className="text-sm text-muted-foreground">Luck Multiplier</p>
+                    <p className="font-medium text-green-600">{user.luckMultiplier}x</p>
+                  </div>
+                )}
                 <div>
                   <p className="text-sm text-muted-foreground">Member Since</p>
                   <p className="font-medium">

@@ -1,6 +1,6 @@
-
 import { VipLevel, VipProgramConfig, VipStats, UserBadge, VipBenefits } from '../types';
 import { authService } from './api';
+import { rbacService } from './rbac';
 
 // Default VIP program configuration
 const defaultVipConfig: VipProgramConfig = {
@@ -221,7 +221,7 @@ export const vipService = {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         const currentUser = authService.getCurrentUser();
-        if (!currentUser?.isAdmin) {
+        if (!rbacService.canAccessAdminPanel(currentUser)) {
           reject(new Error('Unauthorized'));
           return;
         }

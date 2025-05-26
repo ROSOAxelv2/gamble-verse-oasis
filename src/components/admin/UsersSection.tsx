@@ -1,5 +1,6 @@
 
 import { User } from "../../types";
+import { rbacService } from "../../services/rbac";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -25,6 +26,25 @@ interface UsersSectionProps {
 }
 
 export const UsersSection = ({ users, loading }: UsersSectionProps) => {
+  const getRoleDisplayName = (role: string) => {
+    switch (role) {
+      case 'super_admin': return 'Super Admin';
+      case 'admin': return 'Admin';
+      case 'sponsored': return 'Sponsored';
+      case 'normal': return 'Player';
+      default: return 'Player';
+    }
+  };
+
+  const getRoleBadgeVariant = (role: string) => {
+    switch (role) {
+      case 'super_admin': return 'destructive';
+      case 'admin': return 'default';
+      case 'sponsored': return 'secondary';
+      default: return 'outline';
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -48,6 +68,7 @@ export const UsersSection = ({ users, loading }: UsersSectionProps) => {
                   <TableHead>Email</TableHead>
                   <TableHead className="text-right">Balance</TableHead>
                   <TableHead>Role</TableHead>
+                  <TableHead>Luck</TableHead>
                   <TableHead>Joined</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
@@ -59,9 +80,13 @@ export const UsersSection = ({ users, loading }: UsersSectionProps) => {
                     <TableCell>{user.email}</TableCell>
                     <TableCell className="text-right">{user.balance.toLocaleString()}</TableCell>
                     <TableCell>
-                      <Badge variant={user.isAdmin ? "default" : "secondary"}>
-                        {user.isAdmin ? (user.role?.replace('_', ' ') || 'Admin') : 'Player'}
+                      <Badge variant={getRoleBadgeVariant(user.role)}>
+                        {getRoleDisplayName(user.role)}
                       </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {rbacService.isSponsored(user) && user.luckMultiplier ? 
+                        `${user.luckMultiplier}x` : '-'}
                     </TableCell>
                     <TableCell>
                       {new Date(user.createdAt).toLocaleDateString()}
