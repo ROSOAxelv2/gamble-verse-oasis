@@ -1,8 +1,8 @@
-import { User, Transaction, GameType, TransactionType, DiceGameResult, GameConfig, PlinkoGameResult, SlotGameResult, AdminAnalytics, VipLevel, CrashGameResult, CrashConfig } from '../types';
+import { User, Transaction, GameType, TransactionType, DiceGameResult, GameConfig, PlinkoGameResult, SlotGameResult, AdminAnalytics, VipLevel, CrashGameResult, CrashConfig, UserRole } from '../types';
 import { vipService } from './vip';
-import { adminAuthService } from './adminAuth';
+import { rbacService } from './rbac';
 
-// Mock user data
+// Mock user data with new role system
 let currentUser: User | null = null;
 const registeredUsers: User[] = [
   {
@@ -10,7 +10,7 @@ const registeredUsers: User[] = [
     username: 'demo',
     email: 'demo@example.com',
     balance: 1000,
-    isAdmin: false,
+    role: UserRole.NORMAL,
     createdAt: new Date().toISOString(),
     vipStats: {
       level: VipLevel.BRONZE,
@@ -25,8 +25,7 @@ const registeredUsers: User[] = [
     username: 'admin',
     email: 'admin@example.com',
     balance: 5000,
-    isAdmin: true,
-    role: 'game_moderator' as any,
+    role: UserRole.ADMIN,
     createdAt: new Date().toISOString(),
     vipStats: {
       level: VipLevel.GOLD,
@@ -41,9 +40,24 @@ const registeredUsers: User[] = [
     username: 'superadmin',
     email: 'superadmin@lovablecasino.com',
     balance: 0,
-    isAdmin: true,
-    role: 'super_admin' as any,
+    role: UserRole.SUPER_ADMIN,
     createdAt: new Date().toISOString(),
+  },
+  {
+    id: '4',
+    username: 'sponsored',
+    email: 'sponsored@example.com',
+    balance: 2000,
+    role: UserRole.SPONSORED,
+    luckMultiplier: 1.5,
+    createdAt: new Date().toISOString(),
+    vipStats: {
+      level: VipLevel.SILVER,
+      lifetimeWagered: 15000,
+      currentPoints: 150,
+      nextLevelAt: 50000,
+      badges: []
+    }
   }
 ];
 
@@ -126,7 +140,7 @@ export const authService = {
           username,
           email,
           balance: 1000, // Starting balance
-          isAdmin: false,
+          role: UserRole.NORMAL,
           createdAt: new Date().toISOString(),
         };
 
@@ -313,7 +327,7 @@ export const userService = {
   },
 };
 
-// Game services
+// Game services with luck multiplier support
 export const gameService = {
   getGameConfig: async (gameType: GameType): Promise<GameConfig> => {
     return new Promise((resolve, reject) => {
@@ -364,8 +378,16 @@ export const gameService = {
           return;
         }
 
-        // Generate random dice roll (1-6)
-        const actualNumber = Math.floor(Math.random() * 6) + 1;
+        // Generate random dice roll with luck multiplier
+        let actualNumber = Math.floor(Math.random() * 6) + 1;
+        
+        // Apply luck multiplier for sponsored users
+        const luckMultiplier = rbacService.getUserLuckMultiplier(currentUser);
+        if (luckMultiplier > 1.0 && Math.random() < (luckMultiplier - 1.0)) {
+          // Increase chance of winning for sponsored users
+          actualNumber = chosenNumber;
+        }
+        
         const isWin = chosenNumber === actualNumber;
         let winAmount = 0;
 
@@ -702,13 +724,13 @@ export const gameService = {
   }
 };
 
-// Admin services
+// Admin services with RBAC
 export const adminService = {
   getAllUsers: async (): Promise<User[]> => {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         console.log('API: getAllUsers called, current user:', currentUser);
-        if (!currentUser?.isAdmin) {
+        if (!rbacService.canManageUsers(currentUser)) {
           console.log('API: Unauthorized access attempt by:', currentUser);
           reject(new Error('Unauthorized'));
           return;
@@ -723,7 +745,7 @@ export const adminService = {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         console.log('API: getAllGameConfigs called, current user:', currentUser);
-        if (!currentUser?.isAdmin) {
+        if (!rbacService.canManageGameConfigs(currentUser)) {
           console.log('API: Unauthorized access attempt by:', currentUser);
           reject(new Error('Unauthorized'));
           return;
@@ -740,8 +762,8 @@ export const adminService = {
         console.log('API: updateGameConfig called with:', config);
         console.log('API: Current user:', currentUser);
         
-        if (!currentUser?.isAdmin) {
-          console.log('API: Unauthorized - user is not admin');
+        if (!rbacService.canManageGameConfigs(currentUser)) {
+          console.log('API: Unauthorized - user cannot manage game configs');
           reject(new Error('Unauthorized'));
           return;
         }
@@ -754,11 +776,11 @@ export const adminService = {
             gameConfigurations[configIndex] = { ...config };
             
             // Log the admin action
-            adminAuthService.logAction(
-              currentUser.id, 
-              'UPDATE_GAME_CONFIG', 
-              `Updated ${config.gameType} configuration: enabled=${config.enabled}, minBet=${config.minBet}, maxBet=${config.maxBet}`
-            );
+            // adminAuthService.logAction(
+            //   currentUser.id, 
+            //   'UPDATE_GAME_CONFIG', 
+            //   `Updated ${config.gameType} configuration: enabled=${config.enabled}, minBet=${config.minBet}, maxBet=${config.maxBet}`
+            // );
             
             console.log('API: Game configuration updated successfully:', config);
             resolve();
@@ -774,10 +796,36 @@ export const adminService = {
     });
   },
 
+  updateUserRole: async (userId: string, role: UserRole, luckMultiplier?: number): Promise<User> => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if (!rbacService.canManageUsers(currentUser)) {
+          reject(new Error('Unauthorized'));
+          return;
+        }
+        
+        const userIndex = registeredUsers.findIndex(u => u.id === userId);
+        if (userIndex === -1) {
+          reject(new Error('User not found'));
+          return;
+        }
+        
+        registeredUsers[userIndex].role = role;
+        if (role === UserRole.SPONSORED && luckMultiplier) {
+          registeredUsers[userIndex].luckMultiplier = luckMultiplier;
+        } else {
+          delete registeredUsers[userIndex].luckMultiplier;
+        }
+        
+        resolve(registeredUsers[userIndex]);
+      }, 500);
+    });
+  },
+
   getAllTransactions: async (): Promise<Transaction[]> => {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        if (!currentUser?.isAdmin) {
+        if (!rbacService.hasPermission(currentUser, 'canViewAnalytics')) {
           reject(new Error('Unauthorized'));
           return;
         }
@@ -792,7 +840,7 @@ export const adminService = {
   getAnalytics: async (): Promise<AdminAnalytics> => {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        if (!currentUser?.isAdmin) {
+        if (!rbacService.hasPermission(currentUser, 'canViewAnalytics')) {
           reject(new Error('Unauthorized'));
           return;
         }
@@ -841,7 +889,7 @@ export const adminService = {
   updateUserStatus: async (userId: string, action: 'freeze' | 'unfreeze'): Promise<User> => {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        if (!currentUser?.isAdmin) {
+        if (!rbacService.canManageUsers(currentUser)) {
           reject(new Error('Unauthorized'));
           return;
         }

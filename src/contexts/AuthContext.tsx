@@ -1,6 +1,6 @@
 
 import React, { createContext, useState, useContext, useEffect } from "react";
-import { User, VipLevel } from "../types";
+import { User, VipLevel, UserRole } from "../types";
 import { syncCurrentUser } from "../services/api";
 
 interface AuthContextType {
@@ -36,16 +36,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     syncCurrentUser(newUser);
   };
 
-  // Mock login function
+  // Mock login function - now handles all user types
   const login = async (email: string, password: string) => {
     console.log("AuthContext: Login attempt for", email);
-    // In a real app, this would make an API call
+    
+    // Define roles based on email patterns
+    let role = UserRole.NORMAL;
+    let luckMultiplier: number | undefined = undefined;
+    
+    if (email.includes("superadmin")) {
+      role = UserRole.SUPER_ADMIN;
+    } else if (email.includes("admin")) {
+      role = UserRole.ADMIN;
+    } else if (email.includes("sponsored")) {
+      role = UserRole.SPONSORED;
+      luckMultiplier = 1.5; // Default luck multiplier for sponsored users
+    }
+    
     const mockUser: User = {
       id: "1",
       username: "demo_user",
       email: email,
       balance: 5000,
-      isAdmin: email.includes("admin"),
+      role: role,
+      luckMultiplier: luckMultiplier,
       createdAt: new Date().toISOString(),
       vipStats: {
         level: VipLevel.BRONZE,
@@ -69,16 +83,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     console.log("AuthContext: User logged in successfully", mockUser);
   };
 
-  // Mock register function
+  // Mock register function - assigns Normal role by default
   const register = async (username: string, email: string, password: string) => {
     console.log("AuthContext: Register attempt for", username, email);
-    // In a real app, this would make an API call
+    
     const mockUser: User = {
       id: "1",
       username: username,
       email: email,
       balance: 1000,
-      isAdmin: false,
+      role: UserRole.NORMAL, // Default role for new users
       createdAt: new Date().toISOString(),
     };
     

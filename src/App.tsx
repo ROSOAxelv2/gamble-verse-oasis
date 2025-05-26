@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -13,7 +14,6 @@ import GamesPage from "./pages/GamesPage";
 import TransactionsPage from "./pages/TransactionsPage";
 import ProfilePage from "./pages/ProfilePage";
 import AdminPage from "./pages/AdminPage";
-import AdminLoginPage from "./pages/AdminLoginPage";
 import VipPage from "./pages/VipPage";
 
 // Components
@@ -32,13 +32,14 @@ const App = () => (
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
-              <Route path="/admin-login" element={<AdminLoginPage />} />
               <Route path="/dashboard" element={<Navigate to="/games" replace />} />
               <Route path="/games" element={<GamesPage />} />
               <Route path="/transactions" element={<TransactionsPage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/vip" element={<VipPage />} />
               <Route path="/admin" element={<AdminPage />} />
+              {/* Redirect old admin login to main login */}
+              <Route path="/admin-login" element={<Navigate to="/" replace />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

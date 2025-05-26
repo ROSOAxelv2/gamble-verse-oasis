@@ -3,6 +3,7 @@ import { ReactNode } from "react";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { useAuth } from "../../contexts/AuthContext";
+import { rbacService } from "../../services/rbac";
 import AuthPage from "../auth/AuthPage";
 
 interface LayoutProps {
@@ -26,7 +27,7 @@ export const Layout = ({ children, requireAuth = false, requireAdmin = false }: 
     return <AuthPage />;
   }
 
-  if (requireAdmin && (!user || !user.isAdmin)) {
+  if (requireAdmin && !rbacService.canAccessAdminPanel(user)) {
     return (
       <Layout>
         <div className="container py-8">

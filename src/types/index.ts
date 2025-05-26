@@ -3,12 +3,32 @@ export interface User {
   username: string;
   email: string;
   balance: number;
-  isAdmin: boolean;
-  role?: AdminRole;
+  role: UserRole;
+  luckMultiplier?: number; // For sponsored users
   createdAt: string;
   vipStats?: VipStats;
 }
 
+export enum UserRole {
+  NORMAL = 'normal',
+  SPONSORED = 'sponsored', 
+  ADMIN = 'admin',
+  SUPER_ADMIN = 'super_admin'
+}
+
+export interface RolePermissions {
+  canViewAdminPanel: boolean;
+  canManageUsers: boolean;
+  canManageGameConfigs: boolean;
+  canViewAuditLogs: boolean;
+  canManagePayouts: boolean;
+  canModerateBalances: boolean;
+  canViewAnalytics: boolean;
+  canAdjustLuck: boolean;
+  canModifyServerConfigs: boolean;
+}
+
+// Legacy admin role enum - keeping for backward compatibility during migration
 export enum AdminRole {
   SUPER_ADMIN = 'super_admin',
   GAME_MODERATOR = 'game_moderator',

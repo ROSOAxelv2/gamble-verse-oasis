@@ -1,24 +1,24 @@
 
 import { User } from "../../types";
-import { adminAuthService } from "../../services/adminAuth";
+import { rbacService } from "../../services/rbac";
 
 export const useAdminPermissions = (user: User | null) => {
   const canViewTab = (tab: string): boolean => {
-    if (!user || !user.isAdmin) return false;
+    if (!user) return false;
     
     switch (tab) {
       case 'users':
-        return adminAuthService.hasPermission(user, 'canManageUsers');
+        return rbacService.canManageUsers(user);
       case 'games':
-        return true; // All admin accounts can manage games
+        return rbacService.canManageGameConfigs(user);
       case 'analytics':
-        return adminAuthService.hasPermission(user, 'canViewAnalytics');
+        return rbacService.hasPermission(user, 'canViewAnalytics');
       case 'logs':
-        return adminAuthService.hasPermission(user, 'canViewAuditLogs');
+        return rbacService.canViewAuditLogs(user);
       case 'vip':
-        return true; // All admin accounts can manage VIP
+        return rbacService.canAccessAdminPanel(user);
       default:
-        return true;
+        return false;
     }
   };
 

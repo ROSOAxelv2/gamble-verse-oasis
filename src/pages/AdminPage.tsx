@@ -1,10 +1,9 @@
-
 import { useState, useEffect } from "react";
 import { Layout } from "../components/layout/Layout";
 import { adminService } from "../services/api";
-import { adminAuthService } from "../services/adminAuth";
 import { useAuth } from "../contexts/AuthContext";
-import { User, GameConfig, GameType, AdminRole, SystemHealth, AuditLog } from "../types";
+import { rbacService } from "../services/rbac";
+import { User, GameConfig, SystemHealth, AuditLog } from "../types";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -14,11 +13,9 @@ import { UsersSection } from "../components/admin/UsersSection";
 import { AnalyticsSection } from "../components/admin/AnalyticsSection";
 import { AuditLogsSection } from "../components/admin/AuditLogsSection";
 import { SystemHealthCard } from "../components/admin/SystemHealthCard";
-import { useAdminPermissions } from "../components/admin/AdminPermissions";
 
 const AdminPage = () => {
   const { user } = useAuth();
-  const { canViewTab } = useAdminPermissions(user);
   const [users, setUsers] = useState<User[]>([]);
   const [gameConfigs, setGameConfigs] = useState<GameConfig[]>([]);
   const [systemHealth, setSystemHealth] = useState<SystemHealth | null>(null);
@@ -73,7 +70,7 @@ const AdminPage = () => {
       }
 
       // Load audit logs (Super Admin only)
-      if (user?.role === AdminRole.SUPER_ADMIN) {
+      if (user?.role === 'super_admin') {
         try {
           const logs = await adminAuthService.getAuditLogs(user.id);
           setAuditLogs(logs);
@@ -92,6 +89,35 @@ const AdminPage = () => {
     }
   }, [user]);
 
+  const canViewTab = (tab: string): boolean => {
+    if (!user) return false;
+    
+    switch (tab) {
+      case 'users':
+        return rbacService.canManageUsers(user);
+      case 'games':
+        return rbacService.canManageGameConfigs(user);
+      case 'analytics':
+        return rbacService.hasPermission(user, 'canViewAnalytics');
+      case 'logs':
+        return rbacService.canViewAuditLogs(user);
+      case 'vip':
+        return rbacService.canAccessAdminPanel(user);
+      default:
+        return false;
+    }
+  };
+
+  const getRoleDisplayName = (role: string) => {
+    switch (role) {
+      case 'super_admin': return 'Super Admin';
+      case 'admin': return 'Admin';
+      case 'sponsored': return 'Sponsored';
+      case 'normal': return 'Player';
+      default: return 'Player';
+    }
+  };
+
   return (
     <Layout requireAuth requireAdmin>
       <div className="container py-8">
@@ -101,7 +127,7 @@ const AdminPage = () => {
             <p className="text-muted-foreground">
               Logged in as: {user?.email} 
               <Badge variant="secondary" className="ml-2">
-                {user?.role?.replace('_', ' ').toUpperCase() || 'ADMIN'}
+                {getRoleDisplayName(user?.role || 'normal')}
               </Badge>
             </p>
           </div>
