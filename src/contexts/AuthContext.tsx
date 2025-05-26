@@ -1,7 +1,7 @@
 
-
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { User, VipLevel } from "../types";
+import { syncCurrentUser } from "../services/api";
 
 interface AuthContextType {
   user: User | null;
@@ -28,6 +28,13 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // Helper function to update user and sync with API
+  const setUserAndSync = (newUser: User | null) => {
+    console.log("AuthContext: Setting user and syncing with API:", newUser);
+    setUser(newUser);
+    syncCurrentUser(newUser);
+  };
 
   // Mock login function
   const login = async (email: string, password: string) => {
@@ -57,7 +64,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       },
     };
     
-    setUser(mockUser);
+    setUserAndSync(mockUser);
     localStorage.setItem("user", JSON.stringify(mockUser));
     console.log("AuthContext: User logged in successfully", mockUser);
   };
@@ -75,7 +82,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       createdAt: new Date().toISOString(),
     };
     
-    setUser(mockUser);
+    setUserAndSync(mockUser);
     localStorage.setItem("user", JSON.stringify(mockUser));
     console.log("AuthContext: User registered successfully", mockUser);
   };
@@ -91,7 +98,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Logout function
   const logout = () => {
     console.log("AuthContext: User logging out");
-    setUser(null);
+    setUserAndSync(null);
     localStorage.removeItem("user");
   };
   
@@ -102,7 +109,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         ...user,
         balance: user.balance + amount
       };
-      setUser(updatedUser);
+      setUserAndSync(updatedUser);
       localStorage.setItem("user", JSON.stringify(updatedUser));
       console.log("AuthContext: User balance updated", updatedUser.balance);
     }
@@ -115,7 +122,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (savedUser) {
       try {
         const parsedUser = JSON.parse(savedUser);
-        setUser(parsedUser);
+        setUserAndSync(parsedUser);
         console.log("AuthContext: Restored user from localStorage", parsedUser);
       } catch (error) {
         console.error("AuthContext: Error parsing saved user", error);
@@ -139,4 +146,3 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     </AuthContext.Provider>
   );
 };
-

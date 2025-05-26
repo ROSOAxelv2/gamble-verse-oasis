@@ -26,7 +26,7 @@ const registeredUsers: User[] = [
     email: 'admin@example.com',
     balance: 5000,
     isAdmin: true,
-    role: 'game_moderator' as any, // Normal admin with game management permissions
+    role: 'game_moderator' as any,
     createdAt: new Date().toISOString(),
     vipStats: {
       level: VipLevel.GOLD,
@@ -42,7 +42,7 @@ const registeredUsers: User[] = [
     email: 'superadmin@lovablecasino.com',
     balance: 0,
     isAdmin: true,
-    role: 'super_admin' as any, // Super admin with all permissions
+    role: 'super_admin' as any,
     createdAt: new Date().toISOString(),
   }
 ];
@@ -94,6 +94,19 @@ const gameConfigurations: GameConfig[] = [
 // Mock transactions
 const transactions: Transaction[] = [];
 
+// Authentication sync function
+export const syncCurrentUser = (user: User | null) => {
+  console.log('API: Syncing current user:', user);
+  currentUser = user;
+  if (user) {
+    // Update the user in registeredUsers array if it exists
+    const userIndex = registeredUsers.findIndex(u => u.id === user.id);
+    if (userIndex !== -1) {
+      registeredUsers[userIndex] = { ...user };
+    }
+  }
+};
+
 // Authentication services
 export const authService = {
   register: async (username: string, email: string, password: string): Promise<User> => {
@@ -119,6 +132,7 @@ export const authService = {
 
         registeredUsers.push(newUser);
         currentUser = newUser;
+        console.log('API: User registered and synced:', newUser);
         resolve(newUser);
       }, 500);
     });
@@ -138,6 +152,7 @@ export const authService = {
         }
 
         currentUser = user;
+        console.log('API: User logged in and synced:', user);
         resolve(user);
       }, 500);
     });
@@ -147,6 +162,7 @@ export const authService = {
     return new Promise(resolve => {
       setTimeout(() => {
         currentUser = null;
+        console.log('API: User logged out and synced');
         resolve();
       }, 300);
     });
@@ -267,6 +283,12 @@ export const userService = {
         };
         transactions.push(transaction);
 
+        // Update the user in the registeredUsers array
+        const userIndex = registeredUsers.findIndex(u => u.id === currentUser!.id);
+        if (userIndex !== -1) {
+          registeredUsers[userIndex] = { ...currentUser };
+        }
+
         resolve(currentUser);
       }, 300);
     });
@@ -302,6 +324,15 @@ export const gameService = {
           return;
         }
         resolve(config);
+      }, 300);
+    });
+  },
+
+  getAllGameConfigs: async (): Promise<GameConfig[]> => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        console.log('API: Returning all game configurations:', gameConfigurations);
+        resolve([...gameConfigurations]);
       }, 300);
     });
   },
@@ -676,11 +707,29 @@ export const adminService = {
   getAllUsers: async (): Promise<User[]> => {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
+        console.log('API: getAllUsers called, current user:', currentUser);
         if (!currentUser?.isAdmin) {
+          console.log('API: Unauthorized access attempt by:', currentUser);
           reject(new Error('Unauthorized'));
           return;
         }
+        console.log('API: Returning all users:', registeredUsers);
         resolve([...registeredUsers]);
+      }, 500);
+    });
+  },
+
+  getAllGameConfigs: async (): Promise<GameConfig[]> => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        console.log('API: getAllGameConfigs called, current user:', currentUser);
+        if (!currentUser?.isAdmin) {
+          console.log('API: Unauthorized access attempt by:', currentUser);
+          reject(new Error('Unauthorized'));
+          return;
+        }
+        console.log('API: Returning all game configurations:', gameConfigurations);
+        resolve([...gameConfigurations]);
       }, 500);
     });
   },
@@ -688,13 +737,17 @@ export const adminService = {
   updateGameConfig: async (config: GameConfig): Promise<void> => {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
+        console.log('API: updateGameConfig called with:', config);
+        console.log('API: Current user:', currentUser);
+        
         if (!currentUser?.isAdmin) {
+          console.log('API: Unauthorized - user is not admin');
           reject(new Error('Unauthorized'));
           return;
         }
 
         try {
-          console.log('Updating game configuration in API:', config);
+          console.log('API: Updating game configuration:', config);
           // Update the game configuration in our mock data
           const configIndex = gameConfigurations.findIndex(c => c.id === config.id);
           if (configIndex !== -1) {
@@ -707,14 +760,14 @@ export const adminService = {
               `Updated ${config.gameType} configuration: enabled=${config.enabled}, minBet=${config.minBet}, maxBet=${config.maxBet}`
             );
             
-            console.log('Game configuration updated successfully:', config);
+            console.log('API: Game configuration updated successfully:', config);
             resolve();
           } else {
-            console.error('Game configuration not found for ID:', config.id);
+            console.error('API: Game configuration not found for ID:', config.id);
             reject(new Error('Game configuration not found'));
           }
         } catch (error) {
-          console.error('Error updating game configuration:', error);
+          console.error('API: Error updating game configuration:', error);
           reject(new Error('Failed to update game configuration'));
         }
       }, 500);

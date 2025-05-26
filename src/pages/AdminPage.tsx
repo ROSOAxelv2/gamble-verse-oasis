@@ -32,62 +32,33 @@ const AdminPage = () => {
 
   useEffect(() => {
     const fetchAdminData = async () => {
+      console.log("AdminPage: Starting to fetch admin data for user:", user);
+      
+      // Load users
       try {
+        console.log("AdminPage: Fetching users...");
         const usersData = await adminService.getAllUsers();
+        console.log("AdminPage: Users loaded:", usersData);
         setUsers(usersData);
       } catch (error) {
+        console.error("AdminPage: Failed to load users:", error);
         toast.error("Failed to load users");
       } finally {
         setLoading(prev => ({ ...prev, users: false }));
       }
 
+      // Load game configurations from API
       try {
-        // Load game configurations with all games enabled
-        setGameConfigs([
-          {
-            id: "1",
-            gameType: GameType.DICE,
-            minBet: 10,
-            maxBet: 1000,
-            payoutMultiplier: 5,
-            enabled: true,
-          },
-          {
-            id: "2",
-            gameType: GameType.PLINKO,
-            minBet: 50,
-            maxBet: 2000,
-            payoutMultiplier: 10,
-            enabled: true,
-          },
-          {
-            id: "3",
-            gameType: GameType.SLOTS,
-            minBet: 25,
-            maxBet: 1500,
-            payoutMultiplier: 8,
-            enabled: true,
-          },
-          {
-            id: "4",
-            gameType: GameType.TREASURE_OF_AZTEC,
-            minBet: 50,
-            maxBet: 2500,
-            payoutMultiplier: 5000,
-            enabled: true,
-          },
-          {
-            id: "5",
-            gameType: GameType.CRASH,
-            minBet: 50,
-            maxBet: 5000,
-            payoutMultiplier: 10,
-            enabled: true,
-          },
-        ]);
-        setLoading(prev => ({ ...prev, configs: false }));
+        console.log("AdminPage: Fetching game configurations...");
+        const configsData = await adminService.getAllGameConfigs();
+        console.log("AdminPage: Game configurations loaded:", configsData);
+        setGameConfigs(configsData);
       } catch (error) {
+        console.error("AdminPage: Failed to load game configurations:", error);
         toast.error("Failed to load game configurations");
+        // Fallback to empty array if API fails
+        setGameConfigs([]);
+      } finally {
         setLoading(prev => ({ ...prev, configs: false }));
       }
 
@@ -116,7 +87,9 @@ const AdminPage = () => {
       }
     };
 
-    fetchAdminData();
+    if (user) {
+      fetchAdminData();
+    }
   }, [user]);
 
   return (
