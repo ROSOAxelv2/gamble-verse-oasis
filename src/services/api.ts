@@ -108,6 +108,42 @@ const gameConfigurations: GameConfig[] = [
 // Mock transactions
 const transactions: Transaction[] = [];
 
+// Mock audit logs data
+const auditLogs: AuditLog[] = [
+  {
+    id: '1',
+    userId: '2',
+    action: 'LOGIN',
+    details: 'Admin user logged in',
+    timestamp: new Date(Date.now() - 60000).toISOString(),
+    ipAddress: '192.168.1.1'
+  },
+  {
+    id: '2',
+    userId: '3',
+    action: 'UPDATE_GAME_CONFIG',
+    details: 'Updated DICE game configuration',
+    timestamp: new Date(Date.now() - 120000).toISOString(),
+    ipAddress: '192.168.1.1'
+  },
+  {
+    id: '3',
+    userId: '2',
+    action: 'VIEW_USERS',
+    details: 'Accessed user management panel',
+    timestamp: new Date(Date.now() - 180000).toISOString(),
+    ipAddress: '192.168.1.1'
+  }
+];
+
+// Mock system health data
+const systemHealthData: SystemHealth = {
+  uptime: 99.9,
+  dbConnections: 45,
+  activeGames: 12,
+  errorRate: 0.001
+};
+
 // Authentication sync function
 export const syncCurrentUser = (user: User | null) => {
   console.log('API: Syncing current user:', user);
@@ -775,13 +811,6 @@ export const adminService = {
           if (configIndex !== -1) {
             gameConfigurations[configIndex] = { ...config };
             
-            // Log the admin action
-            // adminAuthService.logAction(
-            //   currentUser.id, 
-            //   'UPDATE_GAME_CONFIG', 
-            //   `Updated ${config.gameType} configuration: enabled=${config.enabled}, minBet=${config.minBet}, maxBet=${config.maxBet}`
-            // );
-            
             console.log('API: Game configuration updated successfully:', config);
             resolve();
           } else {
@@ -903,6 +932,34 @@ export const adminService = {
         // In a real app, we'd update a 'status' field in the user object
         // For this mock, we'll just return the user without changes
         resolve(registeredUsers[userIndex]);
+      }, 500);
+    });
+  },
+
+  getSystemHealth: async (): Promise<SystemHealth> => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if (!rbacService.canAccessAdminPanel(currentUser)) {
+          reject(new Error('Unauthorized'));
+          return;
+        }
+        
+        resolve({ ...systemHealthData });
+      }, 300);
+    });
+  },
+
+  getAuditLogs: async (): Promise<AuditLog[]> => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if (!rbacService.canViewAuditLogs(currentUser)) {
+          reject(new Error('Unauthorized'));
+          return;
+        }
+        
+        resolve([...auditLogs].sort((a, b) => 
+          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+        ));
       }, 500);
     });
   }
