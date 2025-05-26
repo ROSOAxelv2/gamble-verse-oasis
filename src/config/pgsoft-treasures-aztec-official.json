@@ -1,0 +1,277 @@
+
+{
+  "$schema": "PG Soft Treasures of Aztec Official Configuration",
+  "source": "https://www.slotstemple.com/us/free-slots/treasures-of-aztec/",
+  "gameInfo": {
+    "provider": "PG Soft",
+    "officialName": "Treasures of Aztec",
+    "rtp": 96.71,
+    "volatility": "High",
+    "maxWin": "5000x bet",
+    "releaseDate": "2021",
+    "gridSize": "6×5",
+    "waysToWin": "Adjacency based (4+ consecutive reels)"
+  },
+  "reelConfiguration": {
+    "reels": 6,
+    "rows": 5,
+    "totalPositions": 30,
+    "adjacencyRequirement": 4,
+    "payDirection": "left_to_right_consecutive",
+    "blankStopsEnabled": true,
+    "cascadesEnabled": true,
+    "maxCascades": 50
+  },
+  "symbols": {
+    "blank": {
+      "id": "blank",
+      "symbol": "⬛",
+      "name": "Blank",
+      "type": "blank",
+      "payouts": {},
+      "weight": 35,
+      "canBeGiant": false,
+      "description": "Blank stops that break adjacency"
+    },
+    "low_value": {
+      "card_10": {
+        "id": "card_10",
+        "symbol": "🔟",
+        "name": "Card 10",
+        "type": "low",
+        "payouts": {
+          "4": 0.4,
+          "5": 0.8,
+          "6": 1.6
+        },
+        "weight": 12,
+        "canBeGiant": false
+      },
+      "card_j": {
+        "id": "card_j",
+        "symbol": "🃋",
+        "name": "Card J",
+        "type": "low",
+        "payouts": {
+          "4": 0.4,
+          "5": 0.8,
+          "6": 1.6
+        },
+        "weight": 12,
+        "canBeGiant": false
+      },
+      "card_q": {
+        "id": "card_q",
+        "symbol": "🃝",
+        "name": "Card Q",
+        "type": "low",
+        "payouts": {
+          "4": 0.6,
+          "5": 1.2,
+          "6": 2.4
+        },
+        "weight": 10,
+        "canBeGiant": false
+      },
+      "card_k": {
+        "id": "card_k",
+        "symbol": "🃞",
+        "name": "Card K",
+        "type": "low",
+        "payouts": {
+          "4": 0.6,
+          "5": 1.2,
+          "6": 2.4
+        },
+        "weight": 10,
+        "canBeGiant": false
+      },
+      "card_a": {
+        "id": "card_a",
+        "symbol": "🃑",
+        "name": "Card A",
+        "type": "low",
+        "payouts": {
+          "4": 0.8,
+          "5": 1.6,
+          "6": 3.2
+        },
+        "weight": 8,
+        "canBeGiant": false
+      }
+    },
+    "premium": {
+      "priestess": {
+        "id": "priestess",
+        "symbol": "👸",
+        "name": "Aztec Priestess",
+        "type": "premium",
+        "payouts": {
+          "4": 2.0,
+          "5": 5.0,
+          "6": 12.0
+        },
+        "weight": 6,
+        "canBeGiant": true,
+        "giantWeight": 2
+      },
+      "jaguar": {
+        "id": "jaguar",
+        "symbol": "🐆",
+        "name": "Sacred Jaguar",
+        "type": "premium",
+        "payouts": {
+          "4": 2.4,
+          "5": 6.0,
+          "6": 15.0
+        },
+        "weight": 5,
+        "canBeGiant": true,
+        "giantWeight": 2
+      },
+      "aztec_idol": {
+        "id": "aztec_idol",
+        "symbol": "🗿",
+        "name": "Aztec Idol",
+        "type": "premium",
+        "payouts": {
+          "4": 3.0,
+          "5": 8.0,
+          "6": 20.0
+        },
+        "weight": 4,
+        "canBeGiant": true,
+        "giantWeight": 2
+      },
+      "golden_mask": {
+        "id": "golden_mask",
+        "symbol": "👺",
+        "name": "Golden Mask",
+        "type": "premium",
+        "payouts": {
+          "4": 4.0,
+          "5": 12.0,
+          "6": 30.0
+        },
+        "weight": 3,
+        "canBeGiant": true,
+        "giantWeight": 2
+      }
+    },
+    "special": {
+      "wild_ring": {
+        "id": "wild_ring",
+        "symbol": "💍",
+        "name": "Wild Ring",
+        "type": "wild",
+        "substitutes": ["card_10", "card_j", "card_q", "card_k", "card_a", "priestess", "jaguar", "aztec_idol", "golden_mask"],
+        "payouts": {
+          "4": 6.0,
+          "5": 20.0,
+          "6": 50.0
+        },
+        "weight": 2,
+        "canBeGiant": true,
+        "giantWeight": 1,
+        "fillsWildMeter": true
+      },
+      "scatter": {
+        "id": "scatter",
+        "symbol": "🏛️",
+        "name": "Temple Scatter",
+        "type": "scatter",
+        "payouts": {
+          "3": 1.0,
+          "4": 5.0,
+          "5": 25.0,
+          "6": 100.0
+        },
+        "weight": 1,
+        "canBeGiant": false,
+        "triggersFreeSpin": true
+      }
+    }
+  },
+  "freeSpinConfiguration": {
+    "triggerScatters": {
+      "4": 7,
+      "5": 10,
+      "6": 12
+    },
+    "retriggerScatters": {
+      "3": 5,
+      "4": 7,
+      "5": 10
+    },
+    "giantSymbolsEnabled": true,
+    "giantSymbolReels": [1, 2, 3, 4, 5],
+    "giantSymbolChance": 0.25,
+    "stickyGiantsDuringCascades": true,
+    "giantSymbolSize": {
+      "width": 2,
+      "height": 2
+    }
+  },
+  "cascadeConfiguration": {
+    "enabled": true,
+    "maxCascades": 50,
+    "cascadeDelay": 800,
+    "symbolRemovalDelay": 400,
+    "symbolFallDelay": 200,
+    "newSymbolDelay": 300
+  },
+  "wildMeterConfiguration": {
+    "threshold": 6,
+    "multipliers": [2, 3, 4, 5],
+    "resetOnTrigger": true,
+    "animationDuration": 1200
+  },
+  "reelStrips": {
+    "baseGame": {
+      "reel1": ["⬛", "🔟", "🃋", "⬛", "🃝", "🃞", "⬛", "🃑", "👸", "⬛", "🐆", "🗿", "⬛", "👺", "💍", "⬛", "🏛️", "⬛"],
+      "reel2": ["⬛", "🔟", "🃋", "⬛", "🃝", "🃞", "⬛", "🃑", "👸", "⬛", "🐆", "🗿", "⬛", "👺", "💍", "⬛", "🏛️", "⬛"],
+      "reel3": ["⬛", "🔟", "🃋", "⬛", "🃝", "🃞", "⬛", "🃑", "👸", "⬛", "🐆", "🗿", "⬛", "👺", "💍", "⬛", "🏛️", "⬛"],
+      "reel4": ["⬛", "🔟", "🃋", "⬛", "🃝", "🃞", "⬛", "🃑", "👸", "⬛", "🐆", "🗿", "⬛", "👺", "💍", "⬛", "🏛️", "⬛"],
+      "reel5": ["⬛", "🔟", "🃋", "⬛", "🃝", "🃞", "⬛", "🃑", "👸", "⬛", "🐆", "🗿", "⬛", "👺", "💍", "⬛", "🏛️", "⬛"],
+      "reel6": ["⬛", "🔟", "🃋", "⬛", "🃝", "🃞", "⬛", "🃑", "👸", "⬛", "🐆", "🗿", "⬛", "👺", "💍", "⬛", "🏛️", "⬛"]
+    },
+    "freeSpins": {
+      "reel1": ["🔟", "🃋", "🃝", "🃞", "🃑", "👸", "🐆", "🗿", "👺", "💍", "🏛️"],
+      "reel2": ["🔟", "🃋", "🃝", "🃞", "🃑", "👸", "🐆", "🗿", "👺", "💍", "🏛️"],
+      "reel3": ["🔟", "🃋", "🃝", "🃞", "🃑", "👸", "🐆", "🗿", "👺", "💍", "🏛️"],
+      "reel4": ["🔟", "🃋", "🃝", "🃞", "🃑", "👸", "🐆", "🗿", "👺", "💍", "🏛️"],
+      "reel5": ["🔟", "🃋", "🃝", "🃞", "🃑", "👸", "🐆", "🗿", "👺", "💍", "🏛️"],
+      "reel6": ["🔟", "🃋", "🃝", "🃞", "🃑", "👸", "🐆", "🗿", "👺", "💍", "🏛️"]
+    }
+  },
+  "spinAnimationConfig": {
+    "spinDuration": 2000,
+    "accelerationCurve": "cubic-bezier(0.23, 1, 0.320, 1)",
+    "decelerationCurve": "cubic-bezier(0.755, 0.050, 0.855, 0.060)",
+    "blurEffect": true,
+    "stopOrder": "left_to_right",
+    "reelStopDelay": 150
+  },
+  "uiAnimationConfig": {
+    "cascadeHighlight": {
+      "duration": 600,
+      "easing": "ease-out",
+      "glowEffect": true
+    },
+    "meterFill": {
+      "duration": 800,
+      "easing": "cubic-bezier(0.68, -0.55, 0.265, 1.55)",
+      "pulseEffect": true
+    },
+    "scatterHighlight": {
+      "duration": 1000,
+      "easing": "ease-in-out",
+      "sparkleEffect": true
+    },
+    "freeSpinOverlay": {
+      "duration": 2500,
+      "easing": "ease-out",
+      "fadeInDelay": 500
+    }
+  }
+}
