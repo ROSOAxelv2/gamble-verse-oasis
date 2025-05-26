@@ -4,6 +4,7 @@ import { DiceGame } from "../components/games/DiceGame";
 import { PlinkoGame } from "../components/games/PlinkoGame";
 import { SlotMachine } from "../components/games/SlotMachine";
 import { PragmaticSlotMachine } from "../components/games/PragmaticSlotMachine";
+import { SuperAceSlotMachine } from "../components/games/SuperAceSlotMachine";
 import { SlotGameTheme } from "../types/slots";
 import { CrashGame } from "../components/games/CrashGame";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 const GamesPage = () => {
   const [activeGame, setActiveGame] = useState("dice");
   const [activeSlotTheme, setActiveSlotTheme] = useState<SlotGameTheme>(SlotGameTheme.CLASSIC);
-  const [activeSlotType, setActiveSlotType] = useState<"regular" | "pragmatic">("regular");
+  const [activeSlotType, setActiveSlotType] = useState<"regular" | "pragmatic" | "super-ace">("regular");
 
   return (
     <Layout requireAuth>
@@ -130,19 +131,22 @@ const GamesPage = () => {
             <div>
               {activeSlotType === "regular" ? (
                 <SlotMachine gameTheme={activeSlotTheme} />
-              ) : (
+              ) : activeSlotType === "pragmatic" ? (
                 <PragmaticSlotMachine />
+              ) : (
+                <SuperAceSlotMachine />
               )}
               
               <div className="mt-4 flex justify-center">
                 <Tabs 
                   defaultValue="regular" 
                   value={activeSlotType} 
-                  onValueChange={(v) => setActiveSlotType(v as "regular" | "pragmatic")}
+                  onValueChange={(v) => setActiveSlotType(v as "regular" | "pragmatic" | "super-ace")}
                 >
                   <TabsList>
                     <TabsTrigger value="regular">Regular Slots</TabsTrigger>
                     <TabsTrigger value="pragmatic">Pragmatic Aztec</TabsTrigger>
+                    <TabsTrigger value="super-ace">Super Ace</TabsTrigger>
                   </TabsList>
                 </Tabs>
               </div>
@@ -166,7 +170,7 @@ const GamesPage = () => {
             <div className="p-4 bg-muted rounded-lg">
               <h2 className="text-xl font-bold mb-4">How to Play Slots</h2>
               
-              {activeSlotType === "pragmatic" ? (
+              {activeSlotType === "super-ace" ? (
                 <div className="space-y-4">
                   <div>
                     <h3 className="font-medium">1. Place Your Bet</h3>
@@ -179,6 +183,49 @@ const GamesPage = () => {
                     <h3 className="font-medium">2. Spin the Reels</h3>
                     <p className="text-sm text-muted-foreground">
                       Click the "Spin" button to start the game.
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <h3 className="font-medium">3. Collect Aces</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Collect Ace symbols to fill the meter. 3+ Aces give instant payouts!
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <h3 className="font-medium">4. Super Ace Mode</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Land 4+ Aces to trigger Super Ace Mode with 3x multipliers and free spins!
+                    </p>
+                  </div>
+                  
+                  <div className="mt-8 p-4 bg-card rounded-lg border border-border">
+                    <h3 className="font-medium mb-2">Game Rules:</h3>
+                    <ul className="text-sm space-y-2 text-muted-foreground">
+                      <li>• Minimum bet: 100 credits</li>
+                      <li>• Maximum bet: 5,000 credits</li>
+                      <li>• RTP: 96.80%</li>
+                      <li>• Volatility: Medium</li>
+                      <li>• 5×3 grid with line wins</li>
+                      <li>• Ace collection mechanics</li>
+                      <li>• Super Ace bonus mode</li>
+                    </ul>
+                  </div>
+                </div>
+              ) : activeSlotType === "pragmatic" ? (
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="font-medium">1. Place Your Bet</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Select your bet amount using the slider.
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <h3 className="font-medium">2. Spin the Reels</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Click the "Spin" button to start the reels.
                     </p>
                   </div>
                   

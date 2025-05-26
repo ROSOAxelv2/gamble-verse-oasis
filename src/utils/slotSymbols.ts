@@ -43,11 +43,33 @@ export const PG_SOFT_AZTEC_SYMBOLS = {
   TEMPLE_SCATTER: "🏛️",
 };
 
+// Jili Super Ace symbols
+export const SUPER_ACE_SYMBOLS = {
+  ACE_SPADES: "🃁",
+  SPADES: "♠️",
+  HEARTS: "♥️",
+  DIAMONDS: "♦️",
+  CLUBS: "♣️",
+  KING: "🂮",
+  QUEEN: "🂭",
+  JACK: "🂫",
+  TEN: "🂪",
+  NINE: "🂩",
+  EIGHT: "🂨",
+  SEVEN: "🂧",
+  SIX: "🂦",
+  FIVE: "🂥",
+  CROWN: "👑",
+  DIAMOND_GEM: "💎",
+  JOKER: "🃏"
+};
+
 // Type definitions to avoid TypeScript errors
 export type ClassicSymbolsType = typeof CLASSIC_SYMBOLS;
 export type AztecSymbolsType = typeof AZTEC_SYMBOLS;
 export type PGSoftAztecSymbolsType = typeof PG_SOFT_AZTEC_SYMBOLS;
-export type SlotSymbolsType = ClassicSymbolsType | AztecSymbolsType | PGSoftAztecSymbolsType;
+export type SuperAceSymbolsType = typeof SUPER_ACE_SYMBOLS;
+export type SlotSymbolsType = ClassicSymbolsType | AztecSymbolsType | PGSoftAztecSymbolsType | SuperAceSymbolsType;
 
 export const getSymbolsForTheme = (theme: SlotGameTheme): SlotSymbolsType => {
   switch (theme) {
@@ -73,4 +95,8 @@ export const getClassicSymbol = (key: keyof ClassicSymbolsType): string => {
 
 export const getPGSoftAztecSymbol = (key: keyof PGSoftAztecSymbolsType): string => {
   return PG_SOFT_AZTEC_SYMBOLS[key];
+};
+
+export const getSuperAceSymbol = (key: keyof SuperAceSymbolsType): string => {
+  return SUPER_ACE_SYMBOLS[key];
 };
