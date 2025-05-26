@@ -1,4 +1,5 @@
-import { User, Transaction, GameType, TransactionType, DiceGameResult, GameConfig, PlinkoGameResult, SlotGameResult, AdminAnalytics, VipLevel, CrashGameResult, CrashConfig, UserRole } from '../types';
+
+import { User, Transaction, GameType, TransactionType, DiceGameResult, GameConfig, PlinkoGameResult, SlotGameResult, AdminAnalytics, VipLevel, CrashGameResult, CrashConfig, UserRole, AuditLog, SystemHealth } from '../types';
 import { vipService } from './vip';
 import { rbacService } from './rbac';
 
