@@ -69,12 +69,12 @@ export const usePGSoftSlot = () => {
       }
     };
 
-    // Flatten symbols from config
+    // Flatten symbols from config with proper type handling
     Object.values(officialConfig.symbols).forEach(category => {
       if (typeof category === "object" && category !== null) {
-        Object.values(category).forEach(symbol => {
+        Object.values(category as Record<string, any>).forEach(symbol => {
           if (symbol && typeof symbol === "object" && "id" in symbol) {
-            engineConfig.symbols[symbol.id] = symbol as any;
+            engineConfig.symbols[symbol.id as string] = symbol as any;
           }
         });
       }
@@ -106,7 +106,8 @@ export const usePGSoftSlot = () => {
 
   const triggerFreeSpins = useCallback((scatterCount: number) => {
     const spinMap = officialConfig.freeSpinConfiguration.triggerScatters;
-    const spins = spinMap[scatterCount as keyof typeof spinMap] || 0;
+    const scatterKey = scatterCount.toString() as keyof typeof spinMap;
+    const spins = spinMap[scatterKey] || 0;
     
     setGameState(prev => ({
       ...prev,
@@ -212,12 +213,13 @@ export const usePGSoftSlot = () => {
         finalPayout *= gameState.currentMultiplier;
       }
 
-      // Create game result
+      // Create game result with betAmount included
       const result: SlotGameResult = {
         reels: spinResult.grid,
         isWin: finalPayout > 0,
         winAmount: finalPayout,
-        paylines: finalPayout > 0 ? [1] : []
+        paylines: finalPayout > 0 ? [1] : [],
+        betAmount: betAmount
       };
 
       setGameResult(result);
