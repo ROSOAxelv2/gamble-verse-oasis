@@ -2,6 +2,7 @@
 import { Engine, Render, World, Bodies, Body, Events, Vector } from 'matter-js';
 import plinkoLayout from '@/config/plinkoLayout.json';
 import physicsConfig from '@/config/physicsConfig.json';
+import { PegManager, PegPosition } from './pegManager';
 
 export interface PlinkoDropBet {
   id: string;
@@ -24,6 +25,7 @@ export interface PlinkoPhysicsOptions {
   canvas: HTMLCanvasElement;
   onBallLand: (result: PlinkoResult) => void;
   onBallUpdate?: (ballId: string, position: Vector) => void;
+  onBucketHighlight?: (bucketIndex: number) => void;
   slowDrop?: boolean;
 }
 
@@ -32,10 +34,16 @@ export class PlinkoPhysicsEngine {
   private render: Render;
   private activeBalls: Map<string, { bet: PlinkoDropBet; path: Vector[] }> = new Map();
   private buckets: Body[] = [];
+  private pegs: Body[] = [];
   private options: PlinkoPhysicsOptions;
+  private pegManager: PegManager;
+  private ballDropAnimation: Map<string, { startTime: number; duration: number }> = new Map();
 
   constructor(options: PlinkoPhysicsOptions) {
     this.options = options;
+    this.pegManager = new PegManager();
+    this.pegManager.loadPegCount();
+    
     this.engine = Engine.create();
     
     // Configure physics
@@ -82,15 +90,8 @@ export class PlinkoPhysicsEngine {
       World.add(world, wallBody);
     });
 
-    // Create pegs
-    plinkoLayout.pegs.forEach(peg => {
-      const pegBody = Bodies.circle(peg.x, peg.y, peg.radius, {
-        isStatic: true,
-        render: { fillStyle: '#9b87f5' },
-        ...physicsConfig.materials.peg
-      });
-      World.add(world, pegBody);
-    });
+    // Create pegs using PegManager
+    this.updatePegs();
 
     // Create buckets
     plinkoLayout.buckets.forEach((bucket, index) => {
@@ -112,6 +113,26 @@ export class PlinkoPhysicsEngine {
     });
   }
 
+  private updatePegs() {
+    // Remove existing pegs
+    this.pegs.forEach(peg => {
+      World.remove(this.engine.world, peg);
+    });
+    this.pegs = [];
+
+    // Add new pegs based on current configuration
+    const pegPositions = this.pegManager.generatePegs();
+    pegPositions.forEach(peg => {
+      const pegBody = Bodies.circle(peg.x, peg.y, peg.radius, {
+        isStatic: true,
+        render: { fillStyle: '#9b87f5' },
+        ...physicsConfig.materials.peg
+      });
+      this.pegs.push(pegBody);
+      World.add(this.engine.world, pegBody);
+    });
+  }
+
   private setupCollisionEvents() {
     Events.on(this.engine, 'collisionStart', (event) => {
       event.pairs.forEach(pair => {
@@ -124,6 +145,8 @@ export class PlinkoPhysicsEngine {
                           bodyB.label?.startsWith('bucket-') ? bodyB : null;
 
         if (ballBody && bucketBody) {
+          const bucketIndex = parseInt(bucketBody.label?.replace('bucket-', '') || '0');
+          this.options.onBucketHighlight?.(bucketIndex);
           this.handleBallLanding(ballBody, bucketBody);
         }
       });
@@ -135,6 +158,15 @@ export class PlinkoPhysicsEngine {
         if (body) {
           ballData.path.push({ x: body.position.x, y: body.position.y });
           this.options.onBallUpdate?.(ballId, body.position);
+
+          // Update drop animation
+          const animation = this.ballDropAnimation.get(ballId);
+          if (animation) {
+            const elapsed = Date.now() - animation.startTime;
+            if (elapsed >= animation.duration) {
+              this.ballDropAnimation.delete(ballId);
+            }
+          }
         }
       });
     });
@@ -168,6 +200,7 @@ export class PlinkoPhysicsEngine {
     // Remove ball from world and tracking
     World.remove(this.engine.world, ballBody);
     this.activeBalls.delete(ballId);
+    this.ballDropAnimation.delete(ballId);
 
     this.options.onBallLand(result);
   }
@@ -187,16 +220,26 @@ export class PlinkoPhysicsEngine {
 
   private dropSingleBall(bet: PlinkoDropBet) {
     const ballId = `${bet.id}-${Date.now()}-${Math.random()}`;
-    const startX = plinkoLayout.board.ballStartX + (Math.random() - 0.5) * 20; // Small random offset
+    const startX = plinkoLayout.board.ballStartX + (Math.random() - 0.5) * 20;
     const startY = plinkoLayout.board.ballStartY;
+
+    // Add visible drop animation tracking
+    this.ballDropAnimation.set(ballId, {
+      startTime: Date.now(),
+      duration: 500 // 500ms drop animation
+    });
 
     const ballBody = Bodies.circle(startX, startY, physicsConfig.materials.ball.radius, {
       label: `ball-${ballId}`,
-      render: { fillStyle: '#f97316' },
+      render: { 
+        fillStyle: '#f97316',
+        strokeStyle: '#ea580c',
+        lineWidth: 2
+      },
       ...physicsConfig.materials.ball
     });
 
-    // Apply initial velocity
+    // Apply initial velocity for visible drop
     const initialVel = physicsConfig.dropSettings.initialVelocity;
     Body.setVelocity(ballBody, { x: initialVel.x, y: initialVel.y });
 
@@ -206,6 +249,38 @@ export class PlinkoPhysicsEngine {
       bet: { ...bet, ballId },
       path: [{ x: startX, y: startY }]
     });
+  }
+
+  increasePegs(): void {
+    this.pegManager.increasePegs();
+    this.pegManager.savePegCount();
+    this.updatePegs();
+  }
+
+  decreasePegs(): void {
+    this.pegManager.decreasePegs();
+    this.pegManager.savePegCount();
+    this.updatePegs();
+  }
+
+  getPegRows(): number {
+    return this.pegManager.getCurrentRows();
+  }
+
+  getMinPegRows(): number {
+    return this.pegManager.getMinRows();
+  }
+
+  getMaxPegRows(): number {
+    return this.pegManager.getMaxRows();
+  }
+
+  canIncreasePegs(): boolean {
+    return this.pegManager.canIncrease();
+  }
+
+  canDecreasePegs(): boolean {
+    return this.pegManager.canDecrease();
   }
 
   start() {

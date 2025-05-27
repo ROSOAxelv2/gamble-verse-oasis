@@ -8,6 +8,14 @@
     "ballStartX": 400,
     "ballStartY": 50
   },
+  "pegConfiguration": {
+    "rows": 6,
+    "minRows": 3,
+    "maxRows": 10,
+    "baseSpacing": 50,
+    "verticalSpacing": 60,
+    "radius": 8
+  },
   "pegs": [
     {"x": 400, "y": 120, "radius": 8},
     {"x": 350, "y": 180, "radius": 8},
