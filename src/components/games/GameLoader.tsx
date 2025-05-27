@@ -1,4 +1,3 @@
-
 import React, { Suspense, lazy } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
@@ -15,6 +14,9 @@ import {
 } from '@/components/ui/breadcrumb';
 import { GameConfig } from '@/types/games';
 import gamesConfig from '@/config/games.json';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { CurrencyBar } from './mobile/CurrencyBar';
+import { MobileGameContainer } from './mobile/MobileGameContainer';
 
 // Lazy load game components
 const DiceGame = lazy(() => import('./DiceGame').then(module => ({ default: module.DiceGame })));
@@ -24,12 +26,17 @@ const PragmaticSlotMachine = lazy(() => import('./PragmaticSlotMachine').then(mo
 const SuperAceSlotMachine = lazy(() => import('./SuperAceSlotMachine').then(module => ({ default: module.SuperAceSlotMachine })));
 const CrashGame = lazy(() => import('./CrashGame').then(module => ({ default: module.CrashGame })));
 
+// Create wrapper components that don't require props
+const SlotMachineWrapper = () => <SlotMachine />;
+const PragmaticSlotMachineWrapper = () => <PragmaticSlotMachine />;
+const SuperAceSlotMachineWrapper = () => <SuperAceSlotMachine />;
+
 const gameComponents: Record<string, React.LazyExoticComponent<() => JSX.Element>> = {
   'dice': DiceGame,
   'plinko': PlinkoGame,
-  'slots': SlotMachine,
-  'pragmatic-slots': PragmaticSlotMachine,
-  'super-ace': SuperAceSlotMachine,
+  'slots': SlotMachineWrapper,
+  'pragmatic-slots': PragmaticSlotMachineWrapper,
+  'super-ace': SuperAceSlotMachineWrapper,
   'crash': CrashGame,
 };
 
@@ -57,6 +64,7 @@ const GameLoadingSkeleton = () => (
 
 export const GameLoader = () => {
   const { gameId } = useParams<{ gameId: string }>();
+  const isMobile = useIsMobile();
   
   const games = gamesConfig.games as GameConfig[];
   const game = games.find(g => g.id === gameId);
@@ -86,6 +94,21 @@ export const GameLoader = () => {
     );
   }
 
+  // Mobile full-screen view
+  if (isMobile) {
+    return (
+      <MobileGameContainer game={game}>
+        <CurrencyBar gameId={game.id} />
+        <div className="pt-16"> {/* Account for currency bar height */}
+          <Suspense fallback={<GameLoadingSkeleton />}>
+            <GameComponent />
+          </Suspense>
+        </div>
+      </MobileGameContainer>
+    );
+  }
+
+  // Desktop view - keep existing layout
   return (
     <div className="container py-6">
       {/* Breadcrumb Navigation */}

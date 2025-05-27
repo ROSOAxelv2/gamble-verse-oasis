@@ -9,7 +9,11 @@
       "description": "Roll the dice and win 5x your bet! Simple and exciting.",
       "minBet": 10,
       "maxBet": 1000,
-      "category": "classic"
+      "category": "classic",
+      "features": {
+        "mobileCurrencyBar": true,
+        "exitConfirmation": true
+      }
     },
     {
       "id": "plinko",
@@ -19,7 +23,11 @@
       "description": "Drop the ball and watch it bounce through pegs for big multipliers!",
       "minBet": 50,
       "maxBet": 2000,
-      "category": "arcade"
+      "category": "arcade",
+      "features": {
+        "mobileCurrencyBar": true,
+        "exitConfirmation": true
+      }
     },
     {
       "id": "slots",
@@ -29,7 +37,11 @@
       "description": "Traditional slot machine with multiple themes and paylines.",
       "minBet": 25,
       "maxBet": 1500,
-      "category": "slots"
+      "category": "slots",
+      "features": {
+        "mobileCurrencyBar": true,
+        "exitConfirmation": true
+      }
     },
     {
       "id": "crash",
@@ -39,7 +51,11 @@
       "description": "Cash out before the crash! High risk, high reward multiplier game.",
       "minBet": 50,
       "maxBet": 5000,
-      "category": "multiplier"
+      "category": "multiplier",
+      "features": {
+        "mobileCurrencyBar": true,
+        "exitConfirmation": true
+      }
     },
     {
       "id": "pragmatic-slots",
@@ -49,7 +65,11 @@
       "description": "Explore ancient Aztec treasures with adjacency wins and giant symbols.",
       "minBet": 50,
       "maxBet": 2500,
-      "category": "slots"
+      "category": "slots",
+      "features": {
+        "mobileCurrencyBar": true,
+        "exitConfirmation": true
+      }
     },
     {
       "id": "super-ace",
@@ -59,7 +79,11 @@
       "description": "Collect Aces to trigger Super Ace Mode with 3x multipliers!",
       "minBet": 100,
       "maxBet": 5000,
-      "category": "slots"
+      "category": "slots",
+      "features": {
+        "mobileCurrencyBar": true,
+        "exitConfirmation": true
+      }
     }
   ]
 }
