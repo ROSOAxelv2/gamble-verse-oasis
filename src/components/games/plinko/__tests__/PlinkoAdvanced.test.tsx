@@ -1,7 +1,5 @@
-
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render } from '@testing-library/react';
-import { screen, waitFor } from '@testing-library/dom';
+import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { PlinkoAdvanced } from '../../PlinkoAdvanced';
 import { AuthContext } from '@/contexts/AuthContext';
