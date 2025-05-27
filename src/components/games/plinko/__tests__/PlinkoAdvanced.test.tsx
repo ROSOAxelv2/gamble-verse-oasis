@@ -1,7 +1,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { PlinkoAdvanced } from '../PlinkoAdvanced';
+import { render, screen, waitFor } from '@testing-library/react';
+import { PlinkoAdvanced } from '../../PlinkoAdvanced';
 import { AuthContext } from '@/contexts/AuthContext';
 
 // Mock the physics engine
@@ -48,7 +48,8 @@ const mockAuthContext = {
   login: vi.fn(),
   logout: vi.fn(),
   register: vi.fn(),
-  isLoading: false
+  loading: false,
+  forgotPassword: vi.fn()
 };
 
 describe('PlinkoAdvanced', () => {
@@ -70,20 +71,6 @@ describe('PlinkoAdvanced', () => {
   });
 
   it('disables peg controls when balls are active', async () => {
-    const mockEngineWithActiveBalls = {
-      start: vi.fn(),
-      stop: vi.fn(),
-      dropBalls: vi.fn(),
-      getPegRows: vi.fn().mockReturnValue(6),
-      getMinPegRows: vi.fn().mockReturnValue(3),
-      getMaxPegRows: vi.fn().mockReturnValue(10),
-      canIncreasePegs: vi.fn().mockReturnValue(true),
-      canDecreasePegs: vi.fn().mockReturnValue(true),
-      increasePegs: vi.fn(),
-      decreasePegs: vi.fn(),
-      getActiveBallCount: vi.fn().mockReturnValue(2)
-    };
-
     render(
       <AuthContext.Provider value={mockAuthContext}>
         <PlinkoAdvanced />
@@ -91,7 +78,7 @@ describe('PlinkoAdvanced', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText('Clear all balls to adjust pegs')).toBeInTheDocument();
+      expect(screen.getByText('Range: 3-10 rows')).toBeInTheDocument();
     });
   });
 

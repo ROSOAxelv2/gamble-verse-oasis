@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { User, VipLevel, UserRole } from "../types";
 import { syncCurrentUser } from "../services/api";
@@ -160,3 +159,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     </AuthContext.Provider>
   );
 };
+
+// Export the AuthContext for testing
+export { AuthContext };
