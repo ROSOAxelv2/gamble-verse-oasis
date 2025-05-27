@@ -1,8 +1,10 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import { PlinkoAdvanced } from '../../PlinkoAdvanced';
 import { AuthContext } from '@/contexts/AuthContext';
+import { UserRole } from '@/types';
 
 // Mock the physics engine
 vi.mock('@/utils/plinkoPhysics', () => ({
@@ -39,7 +41,9 @@ const mockUser = {
   id: '1',
   username: 'testuser',
   balance: 1000,
-  email: 'test@test.com'
+  email: 'test@test.com',
+  role: UserRole.NORMAL,
+  createdAt: new Date().toISOString()
 };
 
 const mockAuthContext = {
