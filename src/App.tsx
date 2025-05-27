@@ -11,6 +11,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import GamesPage from "./pages/GamesPage";
+import GamePlayerPage from "./pages/GamePlayerPage";
 import TransactionsPage from "./pages/TransactionsPage";
 import ProfilePage from "./pages/ProfilePage";
 import AdminPage from "./pages/AdminPage";
@@ -34,6 +35,7 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/dashboard" element={<Navigate to="/games" replace />} />
               <Route path="/games" element={<GamesPage />} />
+              <Route path="/play/:gameId" element={<GamePlayerPage />} />
               <Route path="/transactions" element={<TransactionsPage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/vip" element={<VipPage />} />
