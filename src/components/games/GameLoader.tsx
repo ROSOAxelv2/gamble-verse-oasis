@@ -1,3 +1,4 @@
+
 import React, { Suspense, lazy } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
@@ -26,10 +27,10 @@ const PragmaticSlotMachine = lazy(() => import('./PragmaticSlotMachine').then(mo
 const SuperAceSlotMachine = lazy(() => import('./SuperAceSlotMachine').then(module => ({ default: module.SuperAceSlotMachine })));
 const CrashGame = lazy(() => import('./CrashGame').then(module => ({ default: module.CrashGame })));
 
-// Create wrapper components that don't require props
-const SlotMachineWrapper = () => <SlotMachine />;
-const PragmaticSlotMachineWrapper = () => <PragmaticSlotMachine />;
-const SuperAceSlotMachineWrapper = () => <SuperAceSlotMachine />;
+// Create lazy wrapper components that don't require props
+const SlotMachineWrapper = lazy(() => Promise.resolve({ default: () => <SlotMachine /> }));
+const PragmaticSlotMachineWrapper = lazy(() => Promise.resolve({ default: () => <PragmaticSlotMachine /> }));
+const SuperAceSlotMachineWrapper = lazy(() => Promise.resolve({ default: () => <SuperAceSlotMachine /> }));
 
 const gameComponents: Record<string, React.LazyExoticComponent<() => JSX.Element>> = {
   'dice': DiceGame,
