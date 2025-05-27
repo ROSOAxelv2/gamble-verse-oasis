@@ -15,6 +15,8 @@ interface MultiBallControlsProps {
   isDropping: boolean;
   activeBallCount: number;
   maxConcurrentBalls: number;
+  disabled?: boolean;
+  isPhysicsReady?: boolean;
 }
 
 export const MultiBallControls = ({
@@ -23,7 +25,9 @@ export const MultiBallControls = ({
   onDropBalls,
   isDropping,
   activeBallCount,
-  maxConcurrentBalls
+  maxConcurrentBalls,
+  disabled = false,
+  isPhysicsReady = false
 }: MultiBallControlsProps) => {
   const [ballCount, setBallCount] = useState(1);
   const [betPerBall, setBetPerBall] = useState(minBet);
@@ -43,12 +47,16 @@ export const MultiBallControls = ({
   };
 
   const totalBet = ballCount * betPerBall;
-  const canDrop = !isDropping && activeBallCount < maxConcurrentBalls && ballCount > 0;
+  const maxPossibleBalls = Math.min(10, maxConcurrentBalls - activeBallCount);
+  const canDrop = !disabled && !isDropping && activeBallCount < maxConcurrentBalls && ballCount > 0 && isPhysicsReady;
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>Multi-Ball Controls</CardTitle>
+        {!isPhysicsReady && (
+          <p className="text-sm text-muted-foreground">Waiting for game initialization...</p>
+        )}
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Ball Count */}
@@ -57,11 +65,15 @@ export const MultiBallControls = ({
           <Slider
             value={[ballCount]}
             min={1}
-            max={Math.min(10, maxConcurrentBalls - activeBallCount)}
+            max={maxPossibleBalls || 1}
             step={1}
             onValueChange={([value]) => setBallCount(value)}
-            disabled={isDropping}
+            disabled={disabled || isDropping || !isPhysicsReady}
+            className="w-full"
           />
+          <div className="text-xs text-muted-foreground">
+            Available slots: {maxPossibleBalls}
+          </div>
         </div>
 
         {/* Bet Per Ball */}
@@ -73,7 +85,8 @@ export const MultiBallControls = ({
             max={maxBet}
             step={10}
             onValueChange={([value]) => setBetPerBall(value)}
-            disabled={isDropping}
+            disabled={disabled || isDropping || !isPhysicsReady}
+            className="w-full"
           />
         </div>
 
@@ -83,7 +96,7 @@ export const MultiBallControls = ({
             id="slow-drop"
             checked={slowDrop}
             onCheckedChange={setSlowDrop}
-            disabled={isDropping}
+            disabled={disabled || isDropping || !isPhysicsReady}
           />
           <Label htmlFor="slow-drop">Slow Drop Mode</Label>
         </div>
@@ -98,6 +111,12 @@ export const MultiBallControls = ({
             <span>Active Balls:</span>
             <span>{activeBallCount}/{maxConcurrentBalls}</span>
           </div>
+          <div className="flex justify-between items-center text-sm text-muted-foreground">
+            <span>Physics:</span>
+            <span className={isPhysicsReady ? "text-green-600" : "text-orange-600"}>
+              {isPhysicsReady ? "Ready" : "Initializing..."}
+            </span>
+          </div>
         </div>
 
         {/* Drop Button */}
@@ -107,8 +126,16 @@ export const MultiBallControls = ({
           className="w-full"
           size="lg"
         >
-          {isDropping ? `Dropping... (${activeBallCount} active)` : `Drop ${ballCount} Ball${ballCount > 1 ? 's' : ''}`}
+          {!isPhysicsReady ? "Initializing..." : 
+           isDropping ? `Dropping... (${activeBallCount} active)` : 
+           `Drop ${ballCount} Ball${ballCount > 1 ? 's' : ''}`}
         </Button>
+
+        {!isPhysicsReady && (
+          <p className="text-xs text-center text-muted-foreground">
+            Please wait for the game to finish loading before dropping balls.
+          </p>
+        )}
       </CardContent>
     </Card>
   );
