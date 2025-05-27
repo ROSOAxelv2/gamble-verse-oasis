@@ -17,6 +17,7 @@ import { GameConfig } from '@/types/games';
 import gamesConfig from '@/config/games.json';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { CurrencyBar } from './mobile/CurrencyBar';
+import { DesktopCurrencyBar } from './DesktopCurrencyBar';
 import { MobileGameContainer } from './mobile/MobileGameContainer';
 
 // Lazy load game components
@@ -109,7 +110,7 @@ export const GameLoader = () => {
     );
   }
 
-  // Desktop view - keep existing layout
+  // Desktop view with live currency bar
   return (
     <div className="container py-6">
       {/* Breadcrumb Navigation */}
@@ -133,6 +134,11 @@ export const GameLoader = () => {
           </BreadcrumbList>
         </Breadcrumb>
       </div>
+
+      {/* Desktop Currency Bar - Live Updates */}
+      {game.features?.mobileCurrencyBar && (
+        <DesktopCurrencyBar gameId={game.id} />
+      )}
 
       {/* Game Header */}
       <div className="mb-6 flex items-center justify-between">

@@ -1,0 +1,50 @@
+
+{
+  "schema": "1.0",
+  "description": "Plinko board layout configuration with peg positions and bucket definitions",
+  "board": {
+    "width": 800,
+    "height": 600,
+    "ballStartX": 400,
+    "ballStartY": 50
+  },
+  "pegs": [
+    {"x": 400, "y": 120, "radius": 8},
+    {"x": 350, "y": 180, "radius": 8},
+    {"x": 450, "y": 180, "radius": 8},
+    {"x": 300, "y": 240, "radius": 8},
+    {"x": 400, "y": 240, "radius": 8},
+    {"x": 500, "y": 240, "radius": 8},
+    {"x": 250, "y": 300, "radius": 8},
+    {"x": 350, "y": 300, "radius": 8},
+    {"x": 450, "y": 300, "radius": 8},
+    {"x": 550, "y": 300, "radius": 8},
+    {"x": 200, "y": 360, "radius": 8},
+    {"x": 300, "y": 360, "radius": 8},
+    {"x": 400, "y": 360, "radius": 8},
+    {"x": 500, "y": 360, "radius": 8},
+    {"x": 600, "y": 360, "radius": 8},
+    {"x": 150, "y": 420, "radius": 8},
+    {"x": 250, "y": 420, "radius": 8},
+    {"x": 350, "y": 420, "radius": 8},
+    {"x": 450, "y": 420, "radius": 8},
+    {"x": 550, "y": 420, "radius": 8},
+    {"x": 650, "y": 420, "radius": 8}
+  ],
+  "buckets": [
+    {"x": 100, "y": 500, "width": 80, "height": 40, "multiplier": 5.0, "color": "#0ea5e9"},
+    {"x": 180, "y": 500, "width": 80, "height": 40, "multiplier": 2.0, "color": "#8b5cf6"},
+    {"x": 260, "y": 500, "width": 80, "height": 40, "multiplier": 1.5, "color": "#8b5cf6"},
+    {"x": 340, "y": 500, "width": 80, "height": 40, "multiplier": 1.2, "color": "#8b5cf6"},
+    {"x": 420, "y": 500, "width": 80, "height": 40, "multiplier": 0.5, "color": "#d946ef"},
+    {"x": 500, "y": 500, "width": 80, "height": 40, "multiplier": 1.2, "color": "#8b5cf6"},
+    {"x": 580, "y": 500, "width": 80, "height": 40, "multiplier": 1.5, "color": "#8b5cf6"},
+    {"x": 660, "y": 500, "width": 80, "height": 40, "multiplier": 2.0, "color": "#8b5cf6"},
+    {"x": 740, "y": 500, "width": 80, "height": 40, "multiplier": 5.0, "color": "#0ea5e9"}
+  ],
+  "walls": [
+    {"x": 50, "y": 0, "width": 10, "height": 600},
+    {"x": 750, "y": 0, "width": 10, "height": 600},
+    {"x": 50, "y": 590, "width": 710, "height": 10}
+  ]
+}
