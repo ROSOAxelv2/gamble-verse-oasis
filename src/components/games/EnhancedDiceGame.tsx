@@ -61,7 +61,9 @@ export const EnhancedDiceGame = () => {
       const targetSum = parseInt(type.split('-')[1]);
       if (total === targetSum) {
         isWin = true;
-        multiplier = isBonus ? multiplier : diceConfig.payouts.specific[targetSum as keyof typeof diceConfig.payouts.specific];
+        // Fix type conversion by using string key
+        const targetSumKey = targetSum.toString() as keyof typeof diceConfig.payouts.specific;
+        multiplier = isBonus ? multiplier : diceConfig.payouts.specific[targetSumKey];
       }
     } else if (type === 'low') {
       if (total >= 2 && total <= 6) {

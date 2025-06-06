@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -44,7 +43,7 @@ export const JiliPlinkoGame = () => {
   const [ballsDropped, setBallsDropped] = useState(0);
 
   // Get multipliers based on peg rows
-  const currentMultipliers = plinkoConfig.multipliers[pegRows as keyof typeof plinkoConfig.multipliers] || plinkoConfig.multipliers[16];
+  const currentMultipliers = plinkoConfig.multipliers[pegRows.toString() as keyof typeof plinkoConfig.multipliers] || plinkoConfig.multipliers[16];
 
   // Canvas dimensions
   const canvasWidth = 800;
