@@ -4,100 +4,161 @@
     {
       "id": "dice",
       "name": "Dice Game",
+      "description": "Roll the dice and predict the outcome",
       "iconUrl": "🎲",
-      "route": "/games/dice",
-      "description": "Roll the dice and win 5x your bet! Simple and exciting.",
-      "minBet": 10,
-      "maxBet": 1000,
-      "category": "classic",
+      "category": "Table Games",
+      "minBet": 1,
+      "maxBet": 100,
+      "rtp": 96.5,
+      "volatility": "medium",
       "features": {
+        "autoPlay": true,
+        "turboMode": false,
+        "mobileCurrencyBar": true
+      },
+      "status": "active"
+    },
+    {
+      "id": "enhanced-dice",
+      "name": "Enhanced Dice",
+      "description": "Advanced dice game with bonus features and golden dice",
+      "iconUrl": "🎯",
+      "category": "Table Games",
+      "minBet": 0.1,
+      "maxBet": 1000,
+      "rtp": 96.5,
+      "volatility": "medium-high",
+      "features": {
+        "autoPlay": true,
+        "turboMode": true,
         "mobileCurrencyBar": true,
-        "exitConfirmation": true
-      }
+        "bonusRounds": true,
+        "progressiveFeatures": true
+      },
+      "status": "active"
     },
     {
       "id": "plinko",
       "name": "Plinko",
-      "iconUrl": "⚡",
-      "route": "/games/plinko",
-      "description": "Drop the ball and watch it bounce through pegs for big multipliers!",
-      "minBet": 50,
-      "maxBet": 2000,
-      "category": "arcade",
+      "description": "Drop balls and watch them bounce through pegs",
+      "iconUrl": "🎯",
+      "category": "Arcade",
+      "minBet": 1,
+      "maxBet": 100,
+      "rtp": 97.0,
+      "volatility": "high",
       "features": {
+        "autoPlay": true,
+        "turboMode": true,
+        "mobileCurrencyBar": true
+      },
+      "status": "active"
+    },
+    {
+      "id": "jili-plinko",
+      "name": "Jili Plinko",
+      "description": "Premium Plinko with Jili mechanics and golden balls",
+      "iconUrl": "🌟",
+      "category": "Arcade",
+      "minBet": 0.1,
+      "maxBet": 100,
+      "rtp": 97.0,
+      "volatility": "high",
+      "features": {
+        "autoPlay": true,
+        "turboMode": true,
         "mobileCurrencyBar": true,
-        "exitConfirmation": true
-      }
+        "bonusRounds": true,
+        "goldenFeatures": true
+      },
+      "status": "active"
     },
     {
       "id": "slots",
       "name": "Classic Slots",
+      "description": "Traditional 3-reel slot machine",
       "iconUrl": "🎰",
-      "route": "/games/slots",
-      "description": "Traditional slot machine with multiple themes and paylines.",
-      "minBet": 25,
-      "maxBet": 1500,
-      "category": "slots",
+      "category": "Slots",
+      "minBet": 1,
+      "maxBet": 50,
+      "rtp": 95.5,
+      "volatility": "medium",
       "features": {
-        "mobileCurrencyBar": true,
-        "exitConfirmation": true
-      }
+        "autoPlay": true,
+        "turboMode": false,
+        "mobileCurrencyBar": true
+      },
+      "status": "active"
     },
     {
       "id": "money-coming",
       "name": "Money Coming",
+      "description": "Jili-style slot with bonus wheel and respins",
       "iconUrl": "💰",
-      "route": "/games/money-coming",
-      "description": "Jili's Money Coming slot with bonus vault, free spins and cash collection!",
-      "minBet": 25,
-      "maxBet": 2500,
-      "category": "slots",
+      "category": "Slots",
+      "minBet": 0.1,
+      "maxBet": 100,
+      "rtp": 97.0,
+      "volatility": "medium-high",
       "features": {
+        "autoPlay": true,
+        "turboMode": true,
         "mobileCurrencyBar": true,
-        "exitConfirmation": true
-      }
-    },
-    {
-      "id": "crash",
-      "name": "Crash Game",
-      "iconUrl": "🚀",
-      "route": "/games/crash",
-      "description": "Cash out before the crash! High risk, high reward multiplier game.",
-      "minBet": 50,
-      "maxBet": 5000,
-      "category": "multiplier",
-      "features": {
-        "mobileCurrencyBar": true,
-        "exitConfirmation": true
-      }
+        "bonusRounds": true,
+        "respinFeature": true
+      },
+      "status": "active"
     },
     {
       "id": "pragmatic-slots",
-      "name": "Pragmatic Aztec",
-      "iconUrl": "🏛️",
-      "route": "/games/pragmatic-slots",
-      "description": "Explore ancient Aztec treasures with adjacency wins and giant symbols.",
-      "minBet": 50,
-      "maxBet": 2500,
-      "category": "slots",
+      "name": "Pragmatic Slots",
+      "description": "Pragmatic Play style slot machine",
+      "iconUrl": "⚡",
+      "category": "Slots",
+      "minBet": 1,
+      "maxBet": 100,
+      "rtp": 96.0,
+      "volatility": "medium",
       "features": {
-        "mobileCurrencyBar": true,
-        "exitConfirmation": true
-      }
+        "autoPlay": true,
+        "turboMode": true,
+        "mobileCurrencyBar": true
+      },
+      "status": "active"
     },
     {
       "id": "super-ace",
       "name": "Super Ace",
-      "iconUrl": "🃁",
-      "route": "/games/super-ace",
-      "description": "Collect Aces to trigger Super Ace Mode with 3x multipliers!",
-      "minBet": 100,
-      "maxBet": 5000,
-      "category": "slots",
+      "description": "High-energy slot with special features",
+      "iconUrl": "🃏",
+      "category": "Slots",
+      "minBet": 1,
+      "maxBet": 200,
+      "rtp": 96.8,
+      "volatility": "high",
       "features": {
-        "mobileCurrencyBar": true,
-        "exitConfirmation": true
-      }
+        "autoPlay": true,
+        "turboMode": true,
+        "mobileCurrencyBar": true
+      },
+      "status": "active"
+    },
+    {
+      "id": "crash",
+      "name": "Crash Game",
+      "description": "Watch the multiplier grow and cash out before it crashes",
+      "iconUrl": "🚀",
+      "category": "Arcade",
+      "minBet": 1,
+      "maxBet": 500,
+      "rtp": 97.0,
+      "volatility": "very-high",
+      "features": {
+        "autoPlay": true,
+        "turboMode": false,
+        "mobileCurrencyBar": true
+      },
+      "status": "active"
     }
   ]
 }

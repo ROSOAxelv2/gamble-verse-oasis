@@ -22,7 +22,9 @@ import { MobileGameContainer } from './mobile/MobileGameContainer';
 
 // Lazy load game components
 const DiceGame = lazy(() => import('./DiceGame').then(module => ({ default: module.DiceGame })));
+const EnhancedDiceGame = lazy(() => import('./EnhancedDiceGame').then(module => ({ default: module.EnhancedDiceGame })));
 const PlinkoGame = lazy(() => import('./PlinkoGame').then(module => ({ default: module.PlinkoGame })));
+const JiliPlinkoGame = lazy(() => import('./JiliPlinkoGame').then(module => ({ default: module.JiliPlinkoGame })));
 const SlotMachine = lazy(() => import('./SlotMachine').then(module => ({ default: module.SlotMachine })));
 const MoneyComingSlotMachine = lazy(() => import('./MoneyComingSlotMachine').then(module => ({ default: module.MoneyComingSlotMachine })));
 const PragmaticSlotMachine = lazy(() => import('./PragmaticSlotMachine').then(module => ({ default: module.PragmaticSlotMachine })));
@@ -37,7 +39,9 @@ const SuperAceSlotMachineWrapper = lazy(() => Promise.resolve({ default: () => <
 
 const gameComponents: Record<string, React.LazyExoticComponent<() => JSX.Element>> = {
   'dice': DiceGame,
+  'enhanced-dice': EnhancedDiceGame,
   'plinko': PlinkoGame,
+  'jili-plinko': JiliPlinkoGame,
   'slots': SlotMachineWrapper,
   'money-coming': MoneyComingSlotMachineWrapper,
   'pragmatic-slots': PragmaticSlotMachineWrapper,

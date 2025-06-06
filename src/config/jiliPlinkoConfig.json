@@ -1,0 +1,45 @@
+
+{
+  "gameSettings": {
+    "minBet": 0.1,
+    "maxBet": 100,
+    "defaultBet": 1,
+    "currency": "USD",
+    "autoDropDelay": 1000,
+    "maxSimultaneousBalls": 10
+  },
+  "pegConfiguration": {
+    "rows": 16,
+    "minRows": 8,
+    "maxRows": 16,
+    "pegSpacing": 40,
+    "pegRadius": 4,
+    "pegColors": ["#FFD700", "#FF6B35", "#4ECDC4"]
+  },
+  "multipliers": {
+    "8": [5.6, 2.1, 1.1, 1.0, 0.5, 1.0, 1.1, 2.1, 5.6],
+    "12": [8.9, 3.0, 1.4, 1.1, 1.0, 0.5, 0.3, 0.5, 1.0, 1.1, 1.4, 3.0, 8.9],
+    "16": [16.0, 9.0, 2.0, 1.4, 1.1, 1.0, 0.5, 0.3, 0.2, 0.3, 0.5, 1.0, 1.1, 1.4, 2.0, 9.0, 16.0]
+  },
+  "rtp": 97.0,
+  "volatility": "high",
+  "features": {
+    "autoPlay": true,
+    "turboMode": true,
+    "ballTrails": true,
+    "soundEffects": true,
+    "celebrations": true
+  },
+  "bonusFeatures": {
+    "goldenBall": {
+      "probability": 0.1,
+      "multiplier": 2.0,
+      "enabled": true
+    },
+    "multiplierBoost": {
+      "probability": 0.05,
+      "maxBoost": 5.0,
+      "enabled": true
+    }
+  }
+}

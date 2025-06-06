@@ -1,0 +1,56 @@
+
+{
+  "gameSettings": {
+    "minBet": 0.1,
+    "maxBet": 1000,
+    "defaultBet": 1,
+    "currency": "USD",
+    "animationDuration": 2000,
+    "autoRollDelay": 1500
+  },
+  "diceConfiguration": {
+    "sides": 6,
+    "diceCount": 2,
+    "diceColors": ["#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4", "#FFEAA7", "#DDA0DD"],
+    "animationTypes": ["spin", "bounce", "roll"]
+  },
+  "payouts": {
+    "specific": {
+      "2": 30,
+      "3": 15,
+      "4": 8,
+      "5": 5,
+      "6": 4,
+      "7": 3,
+      "8": 4,
+      "9": 5,
+      "10": 8,
+      "11": 15,
+      "12": 30
+    },
+    "ranges": {
+      "low": { "range": [2, 6], "multiplier": 2.5 },
+      "high": { "range": [8, 12], "multiplier": 2.5 },
+      "even": { "multiplier": 1.9 },
+      "odd": { "multiplier": 1.9 }
+    }
+  },
+  "bonusFeatures": {
+    "doubleOrNothing": {
+      "enabled": true,
+      "maxRounds": 5,
+      "multiplier": 2.0
+    },
+    "luckyStreaks": {
+      "enabled": true,
+      "streakMultipliers": [1.1, 1.2, 1.5, 2.0, 3.0]
+    },
+    "goldenDice": {
+      "probability": 0.05,
+      "multiplier": 5.0,
+      "enabled": true
+    }
+  },
+  "rtp": 96.5,
+  "volatility": "medium-high"
+}
