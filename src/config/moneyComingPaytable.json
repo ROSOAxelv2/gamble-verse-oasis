@@ -1,0 +1,14 @@
+
+{
+  "payouts": {
+    "00-00-00": 50,
+    "10-10-10": 10,
+    "5-5-5": 5,
+    "1-1-1": 2,
+    "0-0-0": 1
+  },
+  "baseBet": 1,
+  "paylineCount": 1,
+  "winningLine": "center",
+  "description": "Single horizontal payline across center row only"
+}

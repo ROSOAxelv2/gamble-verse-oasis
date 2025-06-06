@@ -1,0 +1,18 @@
+
+{
+  "targetRTP": 97.00,
+  "rtpTolerance": 0.05,
+  "volatility": "medium-high",
+  "maxConsecutiveRespins": 3,
+  "hitFrequency": {
+    "anyWin": 0.32,
+    "bonusWheel": 0.05,
+    "respin": 0.15,
+    "multiplierHit": 0.85
+  },
+  "testingParameters": {
+    "minimumSpins": 1000000,
+    "distributionTolerance": 0.01,
+    "confidenceLevel": 0.95
+  }
+}

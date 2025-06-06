@@ -1,0 +1,23 @@
+
+{
+  "segments": [
+    { "id": 1, "multiplier": 2, "weight": 20, "color": "#4CAF50" },
+    { "id": 2, "multiplier": 5, "weight": 15, "color": "#2196F3" },
+    { "id": 3, "multiplier": 10, "weight": 12, "color": "#FF9800" },
+    { "id": 4, "multiplier": 20, "weight": 10, "color": "#9C27B0" },
+    { "id": 5, "multiplier": 50, "weight": 8, "color": "#F44336" },
+    { "id": 6, "multiplier": 100, "weight": 6, "color": "#FFEB3B" },
+    { "id": 7, "multiplier": 200, "weight": 5, "color": "#795548" },
+    { "id": 8, "multiplier": 500, "weight": 4, "color": "#607D8B" },
+    { "id": 9, "multiplier": 1000, "weight": 3, "color": "#E91E63" },
+    { "id": 10, "multiplier": 2000, "weight": 2, "color": "#3F51B5" },
+    { "id": 11, "multiplier": 5000, "weight": 1, "color": "#FF5722" },
+    { "id": 12, "multiplier": 10000, "weight": 1, "color": "#FFC107" }
+  ],
+  "totalWeight": 87,
+  "animation": {
+    "spinDuration": 3000,
+    "easeOutDuration": 2000,
+    "celebrationThreshold": 1000
+  }
+}
