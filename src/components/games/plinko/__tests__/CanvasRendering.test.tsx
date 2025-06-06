@@ -43,9 +43,10 @@ vi.mock('matter-js', () => ({
 describe('Canvas Rendering Tests', () => {
   let mockCanvas: HTMLCanvasElement;
   let mockContext: CanvasRenderingContext2D;
+  let mockParentElement: HTMLElement;
 
   beforeEach(() => {
-    // Create mock canvas and context
+    // Create mock context
     mockContext = {
       fillRect: vi.fn(),
       clearRect: vi.fn(),
@@ -71,15 +72,25 @@ describe('Canvas Rendering Tests', () => {
       globalAlpha: 1
     } as any;
 
+    // Create mock parent element
+    mockParentElement = {
+      clientWidth: 800
+    } as HTMLElement;
+
+    // Create mock canvas
     mockCanvas = {
       width: 800,
       height: 600,
       style: {},
-      getContext: vi.fn().mockReturnValue(mockContext),
-      parentElement: {
-        clientWidth: 800
-      }
+      getContext: vi.fn().mockReturnValue(mockContext)
     } as any;
+
+    // Define parentElement as a configurable property for testing
+    Object.defineProperty(mockCanvas, 'parentElement', {
+      value: mockParentElement,
+      writable: true,
+      configurable: true
+    });
   });
 
   it('initializes canvas with correct dimensions', () => {
@@ -94,7 +105,12 @@ describe('Canvas Rendering Tests', () => {
 
   it('creates responsive canvas dimensions', () => {
     // Test with smaller container
-    mockCanvas.parentElement = { clientWidth: 400 } as any;
+    const smallParentElement = { clientWidth: 400 } as HTMLElement;
+    Object.defineProperty(mockCanvas, 'parentElement', {
+      value: smallParentElement,
+      writable: true,
+      configurable: true
+    });
 
     const engine = new PlinkoPhysicsEngine({
       canvas: mockCanvas,
@@ -112,7 +128,12 @@ describe('Canvas Rendering Tests', () => {
     });
 
     // Change container size
-    mockCanvas.parentElement = { clientWidth: 600 } as any;
+    const resizedParentElement = { clientWidth: 600 } as HTMLElement;
+    Object.defineProperty(mockCanvas, 'parentElement', {
+      value: resizedParentElement,
+      writable: true,
+      configurable: true
+    });
     
     engine.resize();
 
