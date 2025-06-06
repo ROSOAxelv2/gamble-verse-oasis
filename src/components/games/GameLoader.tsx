@@ -24,12 +24,14 @@ import { MobileGameContainer } from './mobile/MobileGameContainer';
 const DiceGame = lazy(() => import('./DiceGame').then(module => ({ default: module.DiceGame })));
 const PlinkoGame = lazy(() => import('./PlinkoGame').then(module => ({ default: module.PlinkoGame })));
 const SlotMachine = lazy(() => import('./SlotMachine').then(module => ({ default: module.SlotMachine })));
+const MoneyComingSlotMachine = lazy(() => import('./MoneyComingSlotMachine').then(module => ({ default: module.MoneyComingSlotMachine })));
 const PragmaticSlotMachine = lazy(() => import('./PragmaticSlotMachine').then(module => ({ default: module.PragmaticSlotMachine })));
 const SuperAceSlotMachine = lazy(() => import('./SuperAceSlotMachine').then(module => ({ default: module.SuperAceSlotMachine })));
 const CrashGame = lazy(() => import('./CrashGame').then(module => ({ default: module.CrashGame })));
 
 // Create lazy wrapper components that don't require props
 const SlotMachineWrapper = lazy(() => Promise.resolve({ default: () => <SlotMachine /> }));
+const MoneyComingSlotMachineWrapper = lazy(() => Promise.resolve({ default: () => <MoneyComingSlotMachine /> }));
 const PragmaticSlotMachineWrapper = lazy(() => Promise.resolve({ default: () => <PragmaticSlotMachine /> }));
 const SuperAceSlotMachineWrapper = lazy(() => Promise.resolve({ default: () => <SuperAceSlotMachine /> }));
 
@@ -37,6 +39,7 @@ const gameComponents: Record<string, React.LazyExoticComponent<() => JSX.Element
   'dice': DiceGame,
   'plinko': PlinkoGame,
   'slots': SlotMachineWrapper,
+  'money-coming': MoneyComingSlotMachineWrapper,
   'pragmatic-slots': PragmaticSlotMachineWrapper,
   'super-ace': SuperAceSlotMachineWrapper,
   'crash': CrashGame,

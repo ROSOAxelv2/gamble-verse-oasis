@@ -44,6 +44,20 @@
       }
     },
     {
+      "id": "money-coming",
+      "name": "Money Coming",
+      "iconUrl": "💰",
+      "route": "/games/money-coming",
+      "description": "Jili's Money Coming slot with bonus vault, free spins and cash collection!",
+      "minBet": 25,
+      "maxBet": 2500,
+      "category": "slots",
+      "features": {
+        "mobileCurrencyBar": true,
+        "exitConfirmation": true
+      }
+    },
+    {
       "id": "crash",
       "name": "Crash Game",
       "iconUrl": "🚀",

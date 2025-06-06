@@ -1,0 +1,95 @@
+
+{
+  "gameInfo": {
+    "name": "Money Coming",
+    "provider": "Jili",
+    "type": "video-slot",
+    "reels": 5,
+    "rows": 3,
+    "volatility": "medium-high",
+    "rtp": 96.85,
+    "maxWin": "2000x",
+    "features": ["wild", "scatter", "freeSpins", "bonusGame", "multiplier"]
+  },
+  "symbols": {
+    "high": [
+      { "id": "money_bag", "name": "Money Bag", "emoji": "💰", "payout": [0, 0, 100, 500, 1000] },
+      { "id": "gold_coin", "name": "Gold Coin", "emoji": "🪙", "payout": [0, 0, 80, 400, 800] },
+      { "id": "diamond", "name": "Diamond", "emoji": "💎", "payout": [0, 0, 60, 300, 600] },
+      { "id": "dollar_sign", "name": "Dollar Sign", "emoji": "💲", "payout": [0, 0, 40, 200, 400] }
+    ],
+    "medium": [
+      { "id": "bank", "name": "Bank", "emoji": "🏦", "payout": [0, 0, 30, 150, 300] },
+      { "id": "credit_card", "name": "Credit Card", "emoji": "💳", "payout": [0, 0, 25, 125, 250] },
+      { "id": "cash", "name": "Cash", "emoji": "💵", "payout": [0, 0, 20, 100, 200] }
+    ],
+    "low": [
+      { "id": "ace", "name": "A", "emoji": "🅰️", "payout": [0, 0, 15, 75, 150] },
+      { "id": "king", "name": "K", "emoji": "🅺", "payout": [0, 0, 12, 60, 120] },
+      { "id": "queen", "name": "Q", "emoji": "🅾️", "payout": [0, 0, 10, 50, 100] },
+      { "id": "jack", "name": "J", "emoji": "🅹", "payout": [0, 0, 8, 40, 80] }
+    ],
+    "special": [
+      { "id": "wild", "name": "Wild", "emoji": "🌟", "substitutes": "all_except_scatter" },
+      { "id": "scatter", "name": "Money Tree", "emoji": "🌳", "feature": "free_spins" },
+      { "id": "bonus", "name": "Vault", "emoji": "🔒", "feature": "bonus_game" }
+    ]
+  },
+  "paylines": 25,
+  "betLevels": {
+    "minimum": 25,
+    "maximum": 2500,
+    "increments": [25, 50, 100, 250, 500, 1000, 2500]
+  },
+  "features": {
+    "freeSpins": {
+      "triggerSymbols": ["scatter"],
+      "minSymbols": 3,
+      "awards": {
+        "3": 10,
+        "4": 15,
+        "5": 25
+      },
+      "multiplier": 2,
+      "retrigger": true
+    },
+    "bonusGame": {
+      "triggerSymbols": ["bonus"],
+      "minSymbols": 3,
+      "type": "pick_and_win",
+      "rounds": 3,
+      "prizes": [50, 100, 200, 500, 1000, 2000, 5000],
+      "multipliers": [2, 3, 5, 10]
+    },
+    "wildFeatures": {
+      "expanding": true,
+      "sticky": false,
+      "multiplier": 1
+    },
+    "jackpot": {
+      "progressive": false,
+      "fixed": 10000,
+      "trigger": "5_money_bags"
+    }
+  },
+  "animations": {
+    "spin": {
+      "duration": 2000,
+      "easing": "ease-out"
+    },
+    "win": {
+      "duration": 1500,
+      "highlight": true
+    },
+    "bonus": {
+      "duration": 3000,
+      "particles": true
+    }
+  },
+  "sounds": {
+    "spin": "spin.mp3",
+    "win": "win.mp3",
+    "bonus": "bonus.mp3",
+    "jackpot": "jackpot.mp3"
+  }
+}
