@@ -66,8 +66,8 @@ export const useMoneyComingSlot = () => {
     fetchGameConfig();
   }, [engine]);
 
-  const handleBetAmountChange = (value: string) => {
-    const numValue = parseInt(value);
+  const handleBetAmountChange = (value: number[]) => {
+    const numValue = value[0];
     if (!isNaN(numValue) && numValue >= config.minBet && numValue <= config.maxBet) {
       setBetAmount(numValue);
       setGameState(prev => ({ ...prev, currentBet: numValue }));
@@ -163,7 +163,7 @@ export const useMoneyComingSlot = () => {
         multiplier: isCurrentlyFreeSpin ? 2 : 1
       }));
 
-      // Set game result
+      // Set game result with all required properties
       setGameResult({
         reels: newReels,
         wins,
@@ -171,7 +171,12 @@ export const useMoneyComingSlot = () => {
         freeSpinsAwarded,
         bonusTriggered,
         jackpotWon,
-        newBalance: user.balance - betAmount + finalWinAmount
+        newBalance: user.balance - betAmount + finalWinAmount,
+        // Additional properties for SlotGameResult compatibility
+        betAmount,
+        winAmount: finalWinAmount,
+        paylines: wins.map(win => win.line),
+        isWin: finalWinAmount > 0
       });
 
     } catch (error) {

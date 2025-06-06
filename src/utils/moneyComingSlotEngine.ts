@@ -1,4 +1,3 @@
-
 import moneyComingConfig from '@/config/money-coming-config.json';
 
 export interface MoneyComingSymbol {
@@ -42,6 +41,10 @@ export interface MoneyComingResult {
   bonusTriggered: boolean;
   jackpotWon: boolean;
   newBalance: number;
+  betAmount: number;
+  winAmount: number;
+  paylines: number[];
+  isWin: boolean;
 }
 
 export class MoneyComingSlotEngine {
